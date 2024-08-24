@@ -44,7 +44,7 @@ def createTables(cur):
     cur.execute("""
         CREATE TABLE IF NOT EXISTS credits(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            credit_value INTEGER NOT NULL
+            credit_value REAL NOT NULL
         )
     """)
 
@@ -93,6 +93,18 @@ def createTables(cur):
             FOREIGN KEY (vendor_id) REFERENCES vendor(id)
         )""")
 
+    cur.execute("""
+            CREATE TABLE IF NOT EXISTS orders(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                item_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                qty INTEGER NOT NULL,
+                credits_spent REAL NOT NULL,
+                FOREIGN KEY (item_id) REFERENCES inventory(id),
+                FOREIGN KEY (user_id) REFERENCES user(id)
+            )
+        """)
+
 def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
@@ -132,7 +144,7 @@ def insertDummyData(cur):
     # Insert dummy data into price_inventory table
     cur.execute("""
         INSERT INTO price_inventory (food_id, price) VALUES
-            (1, 3),
+            (1, 3.5),
             (2, 1),
             (3, 2),
             (4, 3),
@@ -203,6 +215,13 @@ def insertDummyData(cur):
             (2, 'food is not good', '2024-08-23 13:20:00'),
             (3, 'Needs improvement in hygiene', '2024-08-22 12:10:00'),
             (3, 'got stomachache', '2024-08-21 11:00:00')
+    """)
+
+    cur.execute("""
+        INSERT INTO orders (item_id, user_id, qty, credits_spent) VALUES
+            (1, 4, 1, 3.5),
+            (2, 5, 2, 2),
+            (3, 1, 1, 2)
     """)
 
 
