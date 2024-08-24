@@ -10,7 +10,7 @@ def post_food():
 
     with st.form(key='food_form'):
         food_name = st.text_input("Food Name", placeholder="Enter the food name")
-        food_type = st.selectbox("Food Type", options=["Cooked", "Packaged", "Baked", "Frozen", "Fresh"])
+        food_type = st.selectbox("Food Type", options=["Cooked", "Packaged"])
         description = st.text_area("Description", placeholder="Enter a brief description of the food")
         is_halal = st.checkbox("Halal", value=False)
         is_vegetarian = st.checkbox("Vegetarian", value=False)
