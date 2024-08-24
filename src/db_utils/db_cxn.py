@@ -9,5 +9,4 @@ def setupDB():
 
     cur.execute("CREATE TABLE movie(title, year, score)")
 
-
 setupDB()
