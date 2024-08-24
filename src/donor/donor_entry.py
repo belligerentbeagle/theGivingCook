@@ -7,11 +7,11 @@ def init_donor_page():
     if 'page' not in st.session_state:
         st.session_state.page = 'Home'
 
-    st.sidebar.title("Navigation")
+    st.sidebar.title("Welcome Back, Donor_Name!")
 
-    if st.sidebar.button("Go to Home"):
+    if st.sidebar.button("Home"):
         st.session_state.page = 'Home'
-    if st.sidebar.button("Go to Post Food"):
+    if st.sidebar.button("Post Food"):
         st.session_state.page = 'Post Food'
 
     if st.session_state.page == 'Home':
