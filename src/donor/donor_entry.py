@@ -13,6 +13,8 @@ def init_donor_page():
         st.session_state.page = 'Home'
     if st.sidebar.button("Post Food"):
         st.session_state.page = 'Post Food'
+    if st.sidebar.button("Past Donations"):
+        st.session_state.page = 'Past Donations'
 
     if st.session_state.page == 'Home':
         run_home_page()
