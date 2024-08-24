@@ -8,7 +8,6 @@ def main():
 
     if auth:
         app.run()
-    
 
 if __name__ == "__main__":
     main()
