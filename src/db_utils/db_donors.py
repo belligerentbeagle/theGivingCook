@@ -42,8 +42,9 @@ class DatabaseConnector:
             cur.execute("""
                 UPDATE inventory
                 SET qty = CASE
-                        WHEN qty > ? THEN qty - ?
-                        ELSE qty = 0
+                            WHEN qty > ? THEN qty - ?
+                            ELSE 0
+                        END
                 WHERE id = ?
             """, (qty, qty, inventory_id))
 
