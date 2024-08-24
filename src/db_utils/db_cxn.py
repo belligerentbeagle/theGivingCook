@@ -70,7 +70,8 @@ def createTables(cur):
             date_of_entry DATE NOT NULL,
             qty INTEGER NOT NULL,
             vendor_id INTEGER NOT NULL,
-            photo BLOB,  
+            photo BLOB NOT NULL,  
+            qr_code BLOB NOT NULL,
             FOREIGN KEY (vendor_id) REFERENCES vendor(id)
         )
     """)
@@ -168,31 +169,34 @@ def insertDummyData(cur):
     with open("../data/assets/naanbread.png", "rb") as file:
         naan = file.read()
 
+    with open("../data/assets/qrcode.png", "rb") as file:
+        qr = file.read()
+
     # Insert dummy data into inventory table with real image data
     cur.execute("""
-    INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo) VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ('Pasta', 'cooked', 'yummy', 1, 0, '2024-12-01', '2024-08-20', 1, 1, pasta))
+    INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo, qr_code) VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('Pasta', 'cooked', 'yummy', 1, 0, '2024-12-01', '2024-08-20', 1, 1, pasta, qr))
 
     cur.execute("""
-        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo) VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ('Tomato Sauce', 'packaged', 'Delicious tomato sauce', 1, 0, '2025-01-15', '2024-08-21', 3, 1, tomatosauce))
+        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo, qr_code) VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('Tomato Sauce', 'packaged', 'Delicious tomato sauce', 1, 0, '2025-01-15', '2024-08-21', 3, 1, tomatosauce, qr))
 
     cur.execute("""
-        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo) VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ('Milo Packet', 'packaged', 'good for health', 1, 0, '2024-09-10', '2024-08-22', 2, 2, milo))
+        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo, qr_code) VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('Milo Packet', 'packaged', 'good for health', 1, 0, '2024-09-10', '2024-08-22', 2, 2, milo, qr))
 
     cur.execute("""
-        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo) VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ('Xiu Mai', 'cooked', 'just xiu mai', 0, 0, '2024-10-05', '2024-08-23', 2, 3, xiumai))
+        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo, qr_code) VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('Xiu Mai', 'cooked', 'just xiu mai', 0, 0, '2024-10-05', '2024-08-23', 2, 3, xiumai, qr))
 
     cur.execute("""
-        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo) VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ('Naan Bread', 'cooked', 'Soft naan bread', 1, 1, '2024-08-30', '2024-08-24', 4, 4, naan))
+        INSERT INTO inventory (food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, qty, vendor_id, photo, qr_code) VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('Naan Bread', 'cooked', 'Soft naan bread', 1, 1, '2024-08-30', '2024-08-24', 4, 4, naan, qr))
 
     # Insert dummy data into user_pref table
     cur.execute("""
