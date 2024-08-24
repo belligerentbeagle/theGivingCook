@@ -12,10 +12,10 @@ from src.donor.home import run_home_page
 def run():
     query_params = st.query_params
     if query_params:
-        scan = query_params.get("scan", ["False"])[0].lower() == "true"
+        scan = query_params.get("scan", "False").lower() == "true"
         # either individual or ngo
-        collection_type = query_params.get("collection_type", [None])[0]
-        inventory_id = query_params.get("inventory_id", [None])[0]
+        collection_type = query_params.get("collection_type", None)
+        inventory_id = query_params.get("inventory_id", None)
         if scan and inventory_id and collection_type:
             handle_qr_scan(collection_type, inventory_id)
     else:

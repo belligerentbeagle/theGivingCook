@@ -12,25 +12,41 @@ class DatabaseConnector:
             print(f"Error connecting to database: {e}")
             return None
     
-    def update_inventory_qty(self, collection_type, inventory_id):
+    def update_inventory_qty_individual(self, inventory_id):
         try:
             conn = self.connect()
             if conn is None:
                 return False
             cur = conn.cursor()
 
-            if collection_type == "individual":
-                cur.execute("""
-                    UPDATE inventory
-                    SET qty = qty - 1
-                    WHERE id = ? AND qty > 0
-                """, (inventory_id,))
-            elif collection_type == "ngo":
-                cur.execute("""
-                    UPDATE inventory
-                    SET qty = 0
-                    WHERE id = ?
-                """, (inventory_id,))
+            cur.execute("""
+                UPDATE inventory
+                SET qty = qty - 1
+                WHERE id = ? AND qty > 0
+            """, (inventory_id,))
+
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            print(f"Error updating inventory quantity: {e}")
+            return False
+    
+    def update_inventory_qty_ngo(self, inventory_id, qty):
+        try:
+            conn = self.connect()
+            if conn is None:
+                return False
+            cur = conn.cursor()
+
+            cur.execute("""
+                UPDATE inventory
+                SET qty = CASE
+                            WHEN qty > ? THEN qty - ?
+                            ELSE 0
+                        END
+                WHERE id = ?
+            """, (qty, qty, inventory_id))
 
             conn.commit()
             conn.close()
