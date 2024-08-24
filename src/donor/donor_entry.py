@@ -1,7 +1,7 @@
 import streamlit as st
-import app  # Import the app module that contains the page functions
 from src.donor.home import run_home_page
 from src.donor.post_food import post_food
+
 
 def init_donor_page():
     if 'page' not in st.session_state:
