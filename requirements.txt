@@ -1,3 +1,6 @@
 streamlit
 pandas
 python-dotenv
+sqlite3
+qrcode
+watchdog
