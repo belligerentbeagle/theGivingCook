@@ -100,6 +100,7 @@ def createTables(cur):
                 user_id INTEGER NOT NULL,
                 qty INTEGER NOT NULL,
                 credits_spent REAL NOT NULL,
+                is_complete BOOLEAN NOT NULL,
                 FOREIGN KEY (item_id) REFERENCES inventory(id),
                 FOREIGN KEY (user_id) REFERENCES user(id)
             )
@@ -218,10 +219,10 @@ def insertDummyData(cur):
     """)
 
     cur.execute("""
-        INSERT INTO orders (item_id, user_id, qty, credits_spent) VALUES
-            (1, 4, 1, 3.5),
-            (2, 5, 2, 2),
-            (3, 1, 1, 2)
+        INSERT INTO orders (item_id, user_id, qty, credits_spent, is_complete) VALUES
+            (1, 4, 1, 3.5, 0),
+            (2, 5, 2, 2, 0),
+            (3, 1, 1, 2, 0)
     """)
 
 
@@ -238,6 +239,7 @@ def setupDB():
     cur.execute("DROP TABLE IF EXISTS credits")
     cur.execute("DROP TABLE IF EXISTS price_inventory")
     cur.execute("DROP TABLE IF EXISTS inventory")
+    cur.execute("DROP TABLE IF EXISTS orders")
 
     # Create tables
     createTables(cur)
