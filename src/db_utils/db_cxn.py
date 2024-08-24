@@ -229,4 +229,5 @@ def setupDB():
     con.commit()
     con.close()
 
-setupDB()
+if __name__ == "__main__":
+    setupDB()
