@@ -1,6 +1,6 @@
 import streamlit as st
 from src.donor.home import run_home_page
-from src.donor.post_food import post_food
+from src.donor.post_food.post_food_main import post_food
 
 
 def init_donor_page():
