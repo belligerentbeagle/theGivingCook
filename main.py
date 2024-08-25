@@ -14,7 +14,7 @@ def main():
     else:
         with st.container():
     # Heading with bold text
-         st.markdown("<h1 style='text-align: center; font-weight: bold;'>The Giving Cook</h1>", unsafe_allow_html=True)
+         st.markdown("<h1 style='text-align: center; font-weight: bold;'>The Giving Cook 👨‍🍳</h1>", unsafe_allow_html=True)
     
     # Rainbow divider
          st.markdown(
