@@ -59,7 +59,7 @@ def show_login_page():
     # Attempt login only if user has tried to log in
     if st.session_state.authentication_status is None:
         st.session_state.username = None
-        name, authentication_status, username = authenticator.login(key = time.time())
+        name, authentication_status, username = authenticator.login(key = str(time.time()))
         st.session_state.authentication_status = authentication_status
 
         if authentication_status:
