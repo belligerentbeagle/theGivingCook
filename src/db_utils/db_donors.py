@@ -64,7 +64,7 @@ def get_vendor_donations(vendor_id, database_loc=database_location):
 
         cur.execute("""
             SELECT id, food_name, food_type, description, is_halal, is_vegetarian, 
-                   expiry, date_of_entry, total_qty, qty_left_after_booking, qty_left_after_scanning, photo, qr_code
+                   expiry, date_of_entry, total_qty, qty_left_after_booking, qty_left_after_scanning, qr_code
             FROM inventory
             WHERE vendor_id = ?
         """, (vendor_id,))
