@@ -35,3 +35,37 @@ def createNewVendorUser(vendor_name, hp_number, address, cuisine, description):
     except Exception as e:
         print(e)
         return False
+
+
+def updateNgo(ngo_id, name, hp_number, address, number_of_ppl, database_loc="theGivingCook.db"):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE ngo
+            SET name = ?, hp_number = ?, address = ?, number_of_ppl = ?
+            WHERE id = ?
+        """, (name, hp_number, address, number_of_ppl, ngo_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+
+
+def updateUser(user_id, first_name, last_name, hp_number, age, sex, database_loc="theGivingCook.db"):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE user
+            SET first_name = ?, last_name = ?, hp_number = ?, age = ?, sex = ?
+            WHERE id = ?
+        """, (first_name, last_name, hp_number, age, sex, user_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False

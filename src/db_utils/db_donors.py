@@ -1,7 +1,7 @@
 import sqlite3
 
 class DatabaseConnector:
-    def __init__(self, database_location="src/data/theGivingCook.db"):
+    def __init__(self, database_location="src/data/theGivingCook.db"): # might need to set to ../data/theGivingCook.db
         self.database_location = database_location
 
     def connect(self):
@@ -38,3 +38,19 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error updating inventory quantity: {e}")
             return False
+
+def updateVendor(vendor_id, name, hp_number, address, cuisine, description, database_loc="theGivingCook.db"):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE vendor
+            SET name = ?, hp_number = ?, address = ?, cuisine = ?, description = ?
+            WHERE id = ?
+        """, (name, hp_number, address, cuisine, description, vendor_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
