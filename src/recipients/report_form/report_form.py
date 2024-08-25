@@ -1,14 +1,16 @@
 import streamlit as st
 from datetime import datetime
 import sqlite3
-from src.recepients.report_form.report_form_success import show_success_page
+from src.recipients.report_form.report_form_success import show_success_page
 from src.gmail.EmailSender import send_message
 
 
 database_loc = "../data/theGivingCook.db"
-email = "mahc081203@gmail.com"
+email = "e0968802@u.nus.edu "
 
 def file_report():
+
+    send_warning_email(0, datetime.now(), 1)
     if 'report_submitted' not in st.session_state:
         st.session_state.report_submitted = False
 
@@ -113,7 +115,7 @@ def getItemsAndVendors():
     
 def send_warning_email(vendor, time, count):
     subject = "Urgent Alert: Potential Food Safety Issue Reported!"
-    body = f"We have received {count} reports regarding food safety associated with food collected from {vendor} on {time}. Please take immediate action to investigate and address these concerns."  
+    body = f"We have received {count} report(s) regarding food safety associated with food collected from {vendor} on {time}. Please take immediate action to investigate and address these concerns."  
     send_message(email, subject, body)
     
 def send_report(vendor, time, description):

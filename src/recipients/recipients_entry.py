@@ -1,5 +1,6 @@
 import streamlit as st
 from src.recipients import search_food
+from src.recipients.report_form.report_form import file_report
 
 def init_recipient_page():
     # Get user's name from session state and set default page if not set
@@ -27,5 +28,4 @@ def init_recipient_page():
     elif st.session_state.page == 'Past Donations':
         print("past donations")
     elif st.session_state.page == 'File Report':
-        print("file report")
-
+        file_report()
