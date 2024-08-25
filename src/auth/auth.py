@@ -58,8 +58,7 @@ def show_login_page():
 
     # Attempt login only if user has tried to log in
     if st.session_state.authentication_status is None:
-        st.session_state.username = None
-        name, authentication_status, username = authenticator.login(key = str(time.time()))
+        name, authentication_status, username = authenticator.login()
         st.session_state.authentication_status = authentication_status
 
         if authentication_status:
@@ -69,6 +68,7 @@ def show_login_page():
             st.session_state.user_id = user_id  # Store the user ID in session
             st.sidebar.success(f"Welcome {name} (Role: {role})")
             st.session_state.authenticator.logout('Logout', 'sidebar')
+            st.session_state.authentication_status = True
             st.stop()
         elif authentication_status is False:
             st.error('Username or password is incorrect')
