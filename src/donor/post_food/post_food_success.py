@@ -51,6 +51,6 @@ def add_item_logic(food_name, food_type, description, is_halal, is_vegetarian, q
     update_inventory_item_with_qr_code(inventory_id, qr_img)
 
     # add new price for the item
-    add_item_price(inventory_id, get_item_price())
+    add_item_price(inventory_id, get_item_price(food_name, food_type, description, is_halal, is_vegetarian, quantity, expiry_date))
 
     return byte_img
