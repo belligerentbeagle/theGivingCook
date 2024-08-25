@@ -4,7 +4,8 @@ from src.donor.post_food.post_food_main import post_food
 
 
 def init_donor_page():
-    st.session_state.page = 'Home'
+    if st.session_state.page == 'Log In':
+        st.session_state.page = 'Home'
     name = st.session_state['name']
     st.sidebar.title(f"Welcome Back, {name}!")
 
