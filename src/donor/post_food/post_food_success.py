@@ -5,7 +5,7 @@ import streamlit as st
 
 from src.db_utils.db_donors import add_new_inventory_item_without_qrcode, update_inventory_item_with_qr_code, \
     add_item_price
-from src.donor.generate_qr import generate_qr_code
+from src.donor.donor_utils import generate_qr_code
 from src.donor.post_food.food_price_algo import get_item_price
 
 
