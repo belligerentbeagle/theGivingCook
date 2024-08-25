@@ -1,5 +1,11 @@
 streamlit
 pandas
 python-dotenv
+pydeck
+geopy
+geolocation-python
+shapely
+streamlit-dynamic-filters
 qrcode
 watchdog
+streamlit_authenticator
