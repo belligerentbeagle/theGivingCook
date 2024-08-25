@@ -3,3 +3,4 @@ pandas
 python-dotenv
 qrcode
 watchdog
+streamlit_authenticator
