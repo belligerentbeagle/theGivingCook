@@ -1,14 +1,8 @@
 import streamlit as st
-import streamlit_authenticator as stauth
 import sqlite3
-import time
+import streamlit_authenticator as stauth
 
-# Database utility functions
-def query_db(query, params=None):
-    with sqlite3.connect("src/data/theGivingCook.db") as conn:
-        cur = conn.cursor()
-        cur.execute(query, params or ())
-        return cur.fetchall()
+from src.db_utils.db_auth import query_db, register_user
 
 # Load configuration from the database
 def load_config():
@@ -49,15 +43,13 @@ def create_authenticator():
 def show_login_page():
     authenticator, config = create_authenticator()
     
-    # Print the loaded user credentials for debugging purposes
-    print("Loaded Users:", config["credentials"]["usernames"])
-    
     # Check if this is the first load (before any login attempt)
     if "authentication_status" not in st.session_state:
         st.session_state.authentication_status = None
 
     # Attempt login only if user has tried to log in
     if st.session_state.authentication_status is None:
+        st.session_state.username = None
         name, authentication_status, username = authenticator.login()
         st.session_state.authentication_status = authentication_status
 
@@ -96,42 +88,6 @@ def get_user_role_and_id(username):
     user_id = config['credentials']['usernames'][username]['user_id']
     return role, user_id
 
-# Adjust the registration functions to insert users into the database
-def register_user(params):
-    # Step 1: Insert into the credits table and retrieve the new credit_id, if needed
-    if "credit_value" in params:
-        credit_query = "INSERT INTO credits (credit_value) VALUES (:credit_value)"
-        query_db(credit_query, {"credit_value": params["credit_value"]})
-        
-        # Retrieve the last inserted credit_id
-        params["credit_id"] = query_db("SELECT last_insert_rowid()")[0][0]
-
-    # Hash the password
-    params["password"] = stauth.Hasher([params["password"]]).generate()[0]
-    
-    # Step 2: Determine the role (now the table name) and construct the appropriate query
-    if params["role"] == "vendor":
-        query = """
-        INSERT INTO vendor (name, username, hp_number, address, cuisine, description, password)
-        VALUES (:name, :username, :hp_number, :address, :cuisine, :description, :password)
-        """
-    
-    elif params["role"] == "ngo":
-        query = """
-        INSERT INTO ngo (name, username, hp_number, address, number_of_ppl, credit_id, password)
-        VALUES (:name, :username, :hp_number, :address, :number_of_ppl, :credit_id, :password)
-        """
-    
-    elif params["role"] == "user":
-        query = """
-        INSERT INTO user (first_name, last_name, username, hp_number, age, sex, credit_id, password)
-        VALUES (:first_name, :last_name, :username, :hp_number, :age, :sex, :credit_id, :password)
-        """
-    
-    # Step 3: Execute the query with the params dictionary
-    query_db(query, params)
-    st.info(f"User '{params.get('name', params.get('first_name', ''))}' registered successfully as {params['role']}.")
-
 # Adjust your signup functions to use the database
 def show_signup_donor():
     st.title("Register as a Donor")
@@ -156,6 +112,7 @@ def show_signup_donor():
     if st.button("Register"):
         if password == password_confirmation:
             register_user(params_dict)
+            st.success(f"User '{username}' registered successfully as {params_dict['role']}.")
         else:
             st.error("Passwords do not match")
 
@@ -191,6 +148,7 @@ def show_signup_beneficiaries():
             if uploaded_file is not None:
                 if password == password_confirmation:
                     register_user(params_dict)
+                    st.success(f"User '{username}' registered successfully as {params_dict['role']}.")
                 else:
                     st.error("Passwords do not match")
             else:
@@ -218,5 +176,6 @@ def show_signup_beneficiaries():
         if st.button("Register"):
             if password == password_confirmation:
                 register_user(params_dict)
+                st.success(f"User '{username}' registered successfully as {params_dict['role']}.")
             else:
                 st.error("Passwords do not match")

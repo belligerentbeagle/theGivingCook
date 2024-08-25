@@ -1,17 +1,26 @@
-import streamlit as st
-from streamlit_modal import Modal
-from PIL import Image
 import datetime
 
-def post_food():
-    # Initialize session state for navigation and form submission if not already set
-    if 'form_submitted' not in st.session_state:
-        st.session_state.form_submitted = False
+import streamlit as st
 
-    if st.session_state.form_submitted:
-        show_success_modal()
+from src.donor.post_food.post_food_success import show_success_page
+
+
+def post_food():
+    if st.session_state.post_food_form_submitted:
+        show_success_page(
+            st.session_state.food_name,
+            st.session_state.food_type,
+            st.session_state.description,
+            st.session_state.is_halal,
+            st.session_state.is_vegetarian,
+            st.session_state.quantity,
+            st.session_state.expiry_date,
+            st.session_state.recipient,
+            st.session_state.image
+        )
     else:
         show_form_page()
+
 
 def show_form_page():
     st.title("Post Food")
@@ -24,15 +33,16 @@ def show_form_page():
         description = st.text_area("Description", placeholder="Enter a brief description of the food")
         is_halal = st.checkbox("Halal", value=False)
         is_vegetarian = st.checkbox("Vegetarian", value=False)
-        quantity = st.number_input("Quantity Available", min_value=1, step=1)
+        quantity = st.slider("Total quantity/pax servable", 1, 200, 1)
         expiry_date = st.date_input("Expiry Date", min_value=datetime.date.today())
+        recipient = st.selectbox("Select who to donate to:", options=["NGOs", "Individuals"])
         image = st.file_uploader("Upload Food Image", type=["jpg", "jpeg", "png"])
 
         submit_button = st.form_submit_button(label="Submit")
 
     if submit_button:
-        if not food_name or not food_type or not description or not image:
-            st.warning("Please fill in all required fields and upload an image.")
+        if not food_name or not food_type or not description or not image or not recipient:
+            st.warning("Please fill in all required fields, upload an image, and select a recipient.")
         else:
             # Store form data in session state
             st.session_state.food_name = food_name
@@ -43,44 +53,11 @@ def show_form_page():
             st.session_state.quantity = quantity
             st.session_state.expiry_date = expiry_date
             st.session_state.image = image
+            st.session_state.recipient = recipient
+            st.session_state.post_food_form_submitted = True
+            st.rerun()
 
-            show_success_modal()
 
-def show_success_modal():
-    # Create a modal for the success message
-    modal = Modal("Success Modal", key="succ-modal",)
-    with st.modal("Success", key="success_modal"):
-        st.success("Food posted successfully!")
-        st.header("Thank you for posting your food donation.")
 
-        st.write(f"**Food Name**: {st.session_state.food_name}")
-        st.write(f"**Food Type**: {st.session_state.food_type}")
-        st.write(f"**Description**: {st.session_state.description}")
-        st.write(f"**Halal**: {'Yes' if st.session_state.is_halal else 'No'}")
-        st.write(f"**Vegetarian**: {'Yes' if st.session_state.is_vegetarian else 'No'}")
-        st.write(f"**Quantity Available**: {st.session_state.quantity}")
-        st.write(f"**Expiry Date**: {st.session_state.expiry_date.strftime('%Y-%m-%d')}")
 
-        # Display the uploaded image
-        if st.session_state.image is not None:
-            image_display = Image.open(st.session_state.image)
-            st.image(image_display, caption='Uploaded Image', use_column_width=True)
 
-        # Display buttons to navigate to different pages
-        if st.button("Go Back to Home"):
-            st.session_state.page = 'Home'
-            st.session_state.form_submitted = False
-
-        if st.button("View Past Donations"):
-            st.session_state.page = 'Past Donations'
-            st.session_state.form_submitted = False
-
-# Main execution
-if 'page' not in st.session_state:
-    st.session_state.page = 'Home'
-
-if st.session_state.page == 'Home':
-    post_food()
-elif st.session_state.page == 'Past Donations':
-    st.write("This is the Past Donations page.")
-    # Add your Past Donations page logic here
