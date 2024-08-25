@@ -1,4 +1,6 @@
 import sqlite3
+from datetime import datetime
+
 
 class DatabaseConnector:
     def __init__(self, database_location="src/data/theGivingCook.db"):
@@ -11,7 +13,7 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error connecting to database: {e}")
             return None
-    
+
     def update_inventory_qty_individual(self, inventory_id):
         try:
             conn = self.connect()
@@ -31,7 +33,7 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error updating inventory quantity: {e}")
             return False
-    
+
     def update_inventory_qty_ngo(self, inventory_id, qty):
         try:
             conn = self.connect()
@@ -54,7 +56,7 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error updating inventory quantity: {e}")
             return False
-    
+
     def get_vendor_donations(self, vendor_id):
         try:
             conn = self.connect()
@@ -76,7 +78,7 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error retrieving vendor donations: {e}")
             return None
-    
+
     def get_donation_by_id(self, item_id):
         try:
             conn = self.connect()
@@ -98,7 +100,8 @@ class DatabaseConnector:
             print(f"Error retrieving donation: {e}")
             return None
 
-    def update_inventory_item(self, item_id, food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty, curr_qty):
+    def update_inventory_item(self, item_id, food_name, food_type, description, is_halal, is_vegetarian, expiry_date,
+                              total_qty, curr_qty):
         try:
             conn = self.connect()
             if conn is None:
@@ -110,11 +113,51 @@ class DatabaseConnector:
                 SET food_name = ?, food_type = ?, description = ?, is_halal = ?, 
                     is_vegetarian = ?, expiry = ?, total_qty = ?, curr_qty = ?
                 WHERE id = ?
-            """, (food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty, curr_qty, item_id))
+            """, (
+            food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty, curr_qty, item_id))
 
             conn.commit()
             conn.close()
             return True
+        except Exception as e:
+            print(f"Error updating inventory item: {e}")
+            return False
+
+    # returns the id of the food item in the inventory
+    def add_new_inventory_item_without_qrcode(self, food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty,
+                               vendor_id, photo):
+        try:
+            conn = self.connect()
+            if conn is None:
+                return False
+            cur = conn.cursor()
+
+            # Current date of entry
+            date_of_entry = datetime.now().strftime('%Y-%m-%d')
+
+            # SQL query to insert a new inventory item
+            cur.execute("""
+                INSERT INTO inventory (
+                    food_name, 
+                    food_type, 
+                    description, 
+                    is_halal, 
+                    is_vegetarian, 
+                    expiry, 
+                    date_of_entry, 
+                    total_qty, 
+                    curr_qty, 
+                    vendor_id, 
+                    photo,
+                ) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                food_name, food_type, description, is_halal, is_vegetarian, expiry_date, date_of_entry, total_qty,
+                total_qty, vendor_id, photo))
+
+            # Commit changes and close the connection
+            conn.commit()
+            conn.close()
         except Exception as e:
             print(f"Error updating inventory item: {e}")
             return False
