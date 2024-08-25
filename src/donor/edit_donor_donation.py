@@ -3,7 +3,7 @@ import pandas as pd
 from src.db_utils.db_donors import get_donation_by_id, update_inventory_item
 
 def edit_donation_page(item_id):
- if st.session_state.authentication_status == True and st.session_state.role == 'vendor':
+#  if st.session_state.authentication_status == True and st.session_state.role == 'vendor':
     
     try:
         donation = get_donation_by_id(item_id)
@@ -41,5 +41,5 @@ def edit_donation_page(item_id):
             st.write("Donation not found or failed to retrieve donation.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
- else:
-    st.error("User is not logged in or is not a vendor.")
+#  else:
+#     st.error("User is not logged in or is not a vendor.")

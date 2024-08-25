@@ -17,20 +17,20 @@ def main():
         app.run()
     else:
         with st.container():
-    # Heading with bold text
-         st.markdown("<h1 style='text-align: center; font-weight: bold;'>The Giving Cook</h1>", unsafe_allow_html=True)
+            # Heading with bold text
+            st.markdown("<h1 style='text-align: center; font-weight: bold;'>The Giving Cook 👨‍🍳</h1>", unsafe_allow_html=True)
     
-    # Rainbow divider
-         st.markdown(
-          """
-          <div style="
-            height: 5px; 
-            background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-            margin-bottom: 20px;">
-          </div>
-          """, 
-          unsafe_allow_html=True
-         )
+            # Rainbow divider
+            st.markdown(
+            """
+            <div style="
+                height: 5px; 
+                background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+                margin-bottom: 20px;">
+            </div>
+            """, 
+            unsafe_allow_html=True
+            )
 
    
         if 'page' not in st.session_state:
