@@ -7,9 +7,9 @@ from src.recipients.scan_qr import scan_qr
 def init_recipient_page():
     # Get user's name from session state and set default page if not set
     name = st.session_state.get('name', 'Guest')
-    
-    if 'page' not in st.session_state:
-        st.session_state.page = 'Search Food'    
+
+    if st.session_state.page == 'Log In':
+        st.session_state.page = 'Search Food'
 
     st.sidebar.title(f"Welcome Back, {name}!")
 
