@@ -1,5 +1,8 @@
 import sqlite3
 
+FILE_PATH = "/Users/apple/Desktop/NUS/Job Search Essentials/Y3 Summer/Projects/theGivingCook/src"
+
+
 def createTables(cur):
     # Create Vendor table
     cur.execute("""
@@ -27,7 +30,7 @@ def createTables(cur):
         )
     """)
 
-    # Create NGO table 
+    # Create NGO table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS ngo(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +42,7 @@ def createTables(cur):
             FOREIGN KEY (credit_id) REFERENCES credits(id)
         )
     """)
-    
+
     # Create Credits table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS credits(
@@ -93,13 +96,21 @@ def createTables(cur):
             FOREIGN KEY (vendor_id) REFERENCES vendor(id)
         )""")
 
+
 def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
         INSERT INTO vendor (name, hp_number, address, cuisine, description) VALUES
-            ('The Fancy Fork', '+65 91234567', '123 Main St', 'italian', 'A cozy place with homemade pasta'),
-            ('Burger Bliss', '+65 98765432', '456 Elm St', 'american', 'Gourmet burgers and fries'),
-            ('Sushi Zen', '+65 82345678', '789 Sakura Lane', 'japanese', 'Fresh sushi and sashimi')
+        ('McDonalds', '+65 91234567', '5 Tampines Street 32, #01-01 Tampines Mart, Singapore 529284', 'Italian', 'A cozy place with homemade pasta'),
+        ('KFC', '+65 98765432', '4 Tampines Central 5, #01-47 Tampines Mall, Singapore 529510', 'American', 'Gourmet burgers and fries'),
+        ('Four Fingers', '+65 82345678', '277 Orchard Road, Gateway, #01-04/05 Orchard, 238858', 'Japanese', 'Fresh sushi and sashimi'),
+        ('Subway', '+65 91258765', '5 Tampines Street 32, #01-21 Tampines Mart, Singapore 529284', 'Chinese', 'Traditional dim sum and tea'),
+        ('Taj Mahal', '+65 93458765', '820 Tampines Street 81, Singapore 520820', 'Indian', 'Authentic North Indian cuisine'),
+        ('La Fiesta', '+65 90254875', '3 Kaki Bukit Rd 2, #01-05B Eunos Warehouse, Singapore 417837', 'Mexican', 'Spicy tacos and fresh guacamole'),
+        ('Patisserie Valerie', '+65 94752865', '61 Ubi Avenue 2, #01-13 Automobile Megamart, 408898', 'French', 'Elegant pastries and desserts'),
+        ('Cairo Grill', '+65 86578439', '10 Kaki Bukit Ave 4, #03-60, Singapore 415874', 'Middle Eastern', 'Kebabs and meze platter'),
+        ('Seoul Food', '+65 96547832', '739A Bedok Reservoir Rd, #01-01, Singapore 471739', 'Korean', 'BBQ and kimchi specials'),
+        ('Bangkok Bites', '+65 81345672', '901 Bedok Reservoir Rd, Singapore 479266', 'Thai', 'Tom Yum Goong and Pad Thai')
     """)
 
     # Insert dummy data into user table with credit_id
@@ -140,19 +151,19 @@ def insertDummyData(cur):
     """)
 
     # Read actual image files in binary mode
-    with open("../data/assets/pasta.jpeg", "rb") as file:
+    with open(f"{FILE_PATH}/data/assets/pasta.jpeg", "rb") as file:
         pasta = file.read()
-    
-    with open("../data/assets/ketchup.png", "rb") as file:
+
+    with open(f"{FILE_PATH}/data/assets/ketchup.png", "rb") as file:
         tomatosauce = file.read()
 
-    with open("../data/assets/milo.jpeg", "rb") as file:
+    with open(f"{FILE_PATH}/data/assets/milo.jpeg", "rb") as file:
         milo = file.read()
-    
-    with open("../data/assets/xiumai.png", "rb") as file:
+
+    with open(f"{FILE_PATH}/data/assets/xiumai.png", "rb") as file:
         xiumai = file.read()
 
-    with open("../data/assets/naanbread.png", "rb") as file:
+    with open(f"{FILE_PATH}/data/assets/naanbread.png", "rb") as file:
         naan = file.read()
 
     # Insert dummy data into inventory table with real image data
@@ -207,7 +218,7 @@ def insertDummyData(cur):
 
 
 def setupDB():
-    con = sqlite3.connect("../data/theGivingCook.db")
+    con = sqlite3.connect(f"{FILE_PATH}/data/theGivingCook.db")
     cur = con.cursor()
 
     # Drop tables if they exist
@@ -228,6 +239,7 @@ def setupDB():
 
     con.commit()
     con.close()
+
 
 if __name__ == "__main__":
     setupDB()

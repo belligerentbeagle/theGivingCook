@@ -1,4 +1,8 @@
 streamlit
 pandas
 python-dotenv
-sqlite3
+pydeck
+geopy
+geolocation-python
+shapely
+streamlit-dynamic-filters

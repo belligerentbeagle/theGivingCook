@@ -1,3 +1,10 @@
+# env 
+.streamlit
+.env
+
+# db
+src/data/theGivingCook.db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
