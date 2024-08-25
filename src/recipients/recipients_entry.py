@@ -15,8 +15,6 @@ def init_recipient_page():
         st.session_state.page = 'Search Food'
     if st.sidebar.button("Manage Profile"):
         st.session_state.page = 'Manage Profile'
-    if st.sidebar.button("Past Donations"):
-        st.session_state.page = 'Past Donations'
     if st.sidebar.button("File Report"):
         st.session_state.page = 'File Report'
     if st.sidebar.button("Scan QR"):
