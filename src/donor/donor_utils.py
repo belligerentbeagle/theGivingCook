@@ -6,7 +6,7 @@ from io import BytesIO
 load_dotenv()
 
 def generate_qr_code(link):
-    host = os.getenv("HOST", "http://localhost:8501/")
+    host = os.getenv("HOST", "https://definite-gradually-giraffe.ngrok-free.app")
     full_link = f"{host}/{link}"
     qr = qrcode.QRCode(
         version=1,

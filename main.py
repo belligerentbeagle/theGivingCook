@@ -94,15 +94,15 @@ def main():
             st.session_state.page = 'Home'
         
         st.sidebar.image("src/data/assets/logo.png")
-        if st.sidebar.button("Home"):
+        if st.sidebar.button("Home", use_container_width=True):
             st.session_state.page = 'Home'
-        if st.sidebar.button("Log In"):
+        if st.sidebar.button("Log In", use_container_width=True):
             st.session_state.page = 'Log In'
-        if st.sidebar.button("Create an Account"):
+        if st.sidebar.button("Create an Account", use_container_width=True):
             st.session_state.page = 'Create an Account'
-        if st.sidebar.button("Be a Registered Donor"):
+        if st.sidebar.button("Be a Registered Donor", use_container_width=True):
             st.session_state.page = 'Register as Donor'
-        if st.sidebar.button("Donate"):
+        if st.sidebar.button("Donate", use_container_width=True):
             st.session_state.page = 'Donate'
 
         if st.session_state.page == 'Home':
