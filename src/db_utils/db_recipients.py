@@ -2,7 +2,9 @@
 
 import sqlite3
 
-database_loc = f"../data/theGivingCook.db"
+FILEPATH = "/Users/apple/Desktop/NUS/Job Search Essentials/Y3 Summer/Projects/theGivingCook/src"
+
+database_loc = f"{FILEPATH}/data/theGivingCook.db"
 
 
 def createNewNgoUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
@@ -19,7 +21,8 @@ def createNewNgoUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
     except Exception as e:
         print(e)
         return False
-    
+
+
 def createNewUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
     try:
         conn = sqlite3.connect(database_loc)
@@ -59,14 +62,15 @@ def retrieveAvailableInventory(date):
             SELECT 
                 inventory.id, inventory.food_name, inventory.food_type, inventory.description, 
                 inventory.is_halal, inventory.is_vegetarian, inventory.expiry, 
-                inventory.date_of_entry, inventory.qty, inventory.vendor_id, inventory.photo, 
+                inventory.date_of_entry, inventory.qty_left_after_booking, inventory.qty_left_after_scanning, for_ngo, inventory.vendor_id, inventory.photo, 
                 vendor.address
             FROM inventory 
             JOIN vendor ON inventory.vendor_id = vendor.id
-            WHERE inventory.qty > 0 AND inventory.expiry > ?
+            WHERE inventory.qty_left_after_booking > 0 AND inventory.expiry > ?
         """, (date,))
         rows = cur.fetchall()
         conn.close()
+        print("retrieved data")
         return rows
     except Exception as e:
         print("Failed to retrieve inventory and vendor data:", e)

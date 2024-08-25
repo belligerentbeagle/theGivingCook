@@ -168,7 +168,7 @@ def retrieve_inventory(user_location=None, max_distance=None):
 
     postings = []
     for (inv_id, food_name, food_type, description, is_halal, is_veg, expiry,
-         date_of_entry, qty, vendor_id, photo, address) in allInventory:
+         date_of_entry, qty_left_after_booking, qty_left_after_scanning, for_ngo, vendor_id, photo, address) in allInventory:
 
         lat, lon = convert_address_to_latlong(address)
         if lat is not None and lon is not None:
@@ -186,7 +186,8 @@ def retrieve_inventory(user_location=None, max_distance=None):
                 'is_vegetarian': is_veg,
                 'expiry_date': expiry,
                 'date_of_entry': date_of_entry,
-                'quantity': qty,
+                'quantity': qty_left_after_booking,
+                'for_ngo': for_ngo,
                 'address': address,
                 'latitude': lat,
                 'longitude': lon,
