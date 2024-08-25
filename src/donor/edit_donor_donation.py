@@ -12,6 +12,10 @@ def edit_donation_page(item_id):
 
             st.write(f"Editing item: {row[1]}")
 
+            qr_code_data = row[-1]
+            if qr_code_data:
+                st.image(qr_code_data, caption="QR Code for this donation", use_column_width=True)
+
             new_food_name = st.text_input("Food Name", value=row[1], key=f"food_name_{item_id}")
             new_food_type = st.text_input("Food Type", value=row[2], key=f"food_type_{item_id}")
             new_description = st.text_area("Description", value=row[3], key=f"description_{item_id}")
