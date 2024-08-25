@@ -4,6 +4,10 @@ from src.auth.auth import show_login_page, show_signup_donor, show_signup_benefi
 
 st.set_page_config(page_title="The Giving Cook", page_icon="🍲")
 
+def show_home_page():
+    st.header("you want food?")
+    st.title("the GIVING COOK")
+    
 def main():
     if st.session_state.get('authentication_status', False):
         role, user_id = get_user_role_and_id(st.session_state.username)
@@ -30,8 +34,7 @@ def main():
 
    
         if 'page' not in st.session_state:
-            st.session_state.page = 'Log In'
-
+            st.session_state.page = 'Home'
         if st.sidebar.button("Log In"):
             st.session_state.page = 'Log In'
         if st.sidebar.button("Create an Account"):
@@ -39,7 +42,9 @@ def main():
         if st.sidebar.button("Be a Registered Donor"):
             st.session_state.page = 'Register as Donor'
 
-        if st.session_state.page == 'Log In':
+        if st.session_state.page == 'Home':
+            show_home_page()
+        elif st.session_state.page == 'Log In':
             show_login_page()
         elif st.session_state.page == 'Create an Account':
             show_signup_beneficiaries()
