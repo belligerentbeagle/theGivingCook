@@ -93,6 +93,7 @@ def main():
         if 'page' not in st.session_state:
             st.session_state.page = 'Home'
         
+        st.sidebar.image("src/data/assets/logo.png")
         if st.sidebar.button("Home"):
             st.session_state.page = 'Home'
         if st.sidebar.button("Log In"):
