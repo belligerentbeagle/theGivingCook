@@ -21,8 +21,8 @@ class DatabaseConnector:
 
             cur.execute("""
                 UPDATE inventory
-                SET qty = qty - 1
-                WHERE id = ? AND qty > 0
+                SET curr_qty = curr_qty - 1
+                WHERE id = ? AND curr_qty > 0
             """, (inventory_id,))
 
             conn.commit()
@@ -41,8 +41,8 @@ class DatabaseConnector:
 
             cur.execute("""
                 UPDATE inventory
-                SET qty = CASE
-                            WHEN qty > ? THEN qty - ?
+                SET curr_qty = CASE
+                            WHEN curr_qty > ? THEN curr_qty - ?
                             ELSE 0
                         END
                 WHERE id = ?
@@ -54,3 +54,4 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error updating inventory quantity: {e}")
             return False
+    
