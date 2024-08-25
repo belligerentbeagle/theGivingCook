@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def createTables(cur):
     # Create Vendor table
     cur.execute("""
@@ -9,7 +10,8 @@ def createTables(cur):
             hp_number TEXT NOT NULL,
             address TEXT NOT NULL,
             cuisine TEXT NOT NULL,
-            description TEXT
+            description TEXT,
+            password TEXT NOT NULL
         )
     """)
 
@@ -23,11 +25,12 @@ def createTables(cur):
             age INTEGER NOT NULL,
             sex TEXT NOT NULL,
             credit_id INTEGER,
+            password TEXT NOT NULL,
             FOREIGN KEY (credit_id) REFERENCES credits(id)
         )
     """)
 
-    # Create NGO table 
+    # Create NGO table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS ngo(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,10 +39,11 @@ def createTables(cur):
             address TEXT NOT NULL,
             number_of_ppl INTEGER NOT NULL,
             credit_id INTEGER,
+            password TEXT NOT NULL,
             FOREIGN KEY (credit_id) REFERENCES credits(id)
         )
     """)
-    
+
     # Create Credits table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS credits(
@@ -107,30 +111,38 @@ def createTables(cur):
                 FOREIGN KEY (user_id) REFERENCES user(id)
             )
         """)
-    
+
+
 def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
-        INSERT INTO vendor (name, hp_number, address, cuisine, description) VALUES
-            ('The Fancy Fork', '+65 91234567', '123 Main St', 'italian', 'A cozy place with homemade pasta'),
-            ('Burger Bliss', '+65 98765432', '456 Elm St', 'american', 'Gourmet burgers and fries'),
-            ('Sushi Zen', '+65 82345678', '789 Sakura Lane', 'japanese', 'Fresh sushi and sashimi')
+        INSERT INTO vendor (name, hp_number, address, cuisine, description, password) VALUES
+        ('McDonalds', '+65 91234567', '5 Tampines Street 32, #01-01 Tampines Mart, Singapore 529284', 'Italian', 'A cozy place with homemade pasta', 'password'),
+        ('KFC', '+65 98765432', '4 Tampines Central 5, #01-47 Tampines Mall, Singapore 529510', 'American', 'Gourmet burgers and fries', 'password'),
+        ('Four Fingers', '+65 82345678', '277 Orchard Road, Gateway, #01-04/05 Orchard, 238858', 'Japanese', 'Fresh sushi and sashimi', 'password'),
+        ('Subway', '+65 91258765', '5 Tampines Street 32, #01-21 Tampines Mart, Singapore 529284', 'Chinese', 'Traditional dim sum and tea', 'password'),
+        ('Taj Mahal', '+65 93458765', '820 Tampines Street 81, Singapore 520820', 'Indian', 'Authentic North Indian cuisine', 'password'),
+        ('La Fiesta', '+65 90254875', '3 Kaki Bukit Rd 2, #01-05B Eunos Warehouse, Singapore 417837', 'Mexican', 'Spicy tacos and fresh guacamole', 'password'),
+        ('Patisserie Valerie', '+65 94752865', '61 Ubi Avenue 2, #01-13 Automobile Megamart, 408898', 'French', 'Elegant pastries and desserts', 'password'),
+        ('Cairo Grill', '+65 86578439', '10 Kaki Bukit Ave 4, #03-60, Singapore 415874', 'Middle Eastern', 'Kebabs and meze platter', 'password'),
+        ('Seoul Food', '+65 96547832', '739A Bedok Reservoir Rd, #01-01, Singapore 471739', 'Korean', 'BBQ and kimchi specials', 'password'),
+        ('Bangkok Bites', '+65 81345672', '901 Bedok Reservoir Rd, Singapore 479266', 'Thai', 'Tom Yum Goong and Pad Thai', 'password')
     """)
 
     # Insert dummy data into user table with credit_id
     cur.execute("""
-        INSERT INTO user (first_name, last_name, hp_number, age, sex, credit_id) VALUES
-            ('John', 'Doe', '+65 91234567', 30, 'M', 4),
-            ('Jane', 'Smith', '+65 92345678', 25, 'F', 5),
-            ('Alice', 'Tan', '+65 93456789', 28, 'F', 6)
+        INSERT INTO user (first_name, last_name, hp_number, age, sex, credit_id, password) VALUES
+            ('John', 'Doe', '+65 91234567', 30, 'M', 4, 'password'),
+            ('Jane', 'Smith', '+65 92345678', 25, 'F', 5, 'password'),
+            ('Alice', 'Tan', '+65 93456789', 28, 'F', 6, 'password')
     """)
 
     # Insert dummy data into ngo table with credit_id
     cur.execute("""
-        INSERT INTO ngo (name, hp_number, address, number_of_ppl, credit_id) VALUES
-            ('Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1),
-            ('Helping Hands', '+65 93456789', '321 Pine St', 50, 2),
-            ('Caring Hearts', '+65 94567890', '567 Cedar Ave', 200, 3)
+        INSERT INTO ngo (name, hp_number, address, number_of_ppl, credit_id, password) VALUES
+            ('Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1, 'password'),
+            ('Helping Hands', '+65 93456789', '321 Pine St', 50, 2, 'password'),
+            ('Caring Hearts', '+65 94567890', '567 Cedar Ave', 200, 3, 'password')
     """)
 
     # Insert dummy data into credits table
@@ -157,13 +169,13 @@ def insertDummyData(cur):
     # Read actual image files in binary mode
     with open("../data/assets/pasta.jpeg", "rb") as file:
         pasta = file.read()
-    
+
     with open("../data/assets/ketchup.png", "rb") as file:
         tomatosauce = file.read()
 
     with open("../data/assets/milo.jpeg", "rb") as file:
         milo = file.read()
-    
+
     with open("../data/assets/xiumai.png", "rb") as file:
         xiumai = file.read()
 
@@ -254,6 +266,7 @@ def setupDB():
 
     con.commit()
     con.close()
+
 
 if __name__ == "__main__":
     setupDB()
