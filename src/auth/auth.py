@@ -6,7 +6,7 @@ from src.db_utils.db_auth import query_db, register_user
 
 # Load configuration from the database
 def load_config():
-    config = {"credentials": {"usernames": {}}, "cookie": {"name": "auth_cookie", "key": "random_key", "expiry_days": 30}}
+    config = {"credentials": {"usernames": {}}, "cookie": {"name": "auth_cookie", "key": "random_key", "expiry_days": 0}}
     
     # Query the vendor, ngo, and user tables
     vendors = query_db("SELECT id, username, name, hp_number, address, cuisine, description, password FROM vendor")
