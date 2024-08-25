@@ -4,7 +4,7 @@ from src.db_utils.db_donors import DatabaseConnector
 
 def view_donations_page():
     # TODO: Check user is logged in and have vendor role
-    
+    st.session_state.post_food_form_submitted = False
     db_connector = DatabaseConnector()
 
     st.write("Here is a list of the food items you have donated so far.")
