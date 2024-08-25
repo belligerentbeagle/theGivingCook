@@ -87,33 +87,30 @@ def show_posting(filtered_data):
                     counter_key = f"counter_{data['inventory_id']}"
                     book_key = f"book_{data['inventory_id']}"
 
-                    qtyButton, bookBtn = st.columns([3, 0.5])
                     qtySelected = 0
 
-                    with qtyButton:
-                        qtySelected = st.number_input("", min_value=1, step=1, placeholder="Enter quantity", key=counter_key)
-                        print(qtySelected)
+                    qtySelected = st.number_input("", min_value=1, step=1, placeholder="Enter quantity", key=counter_key)
+                    print(qtySelected)
 
-                    with bookBtn:
-                        if st.button('Book Now ✅', key=book_key):
-                            if qtySelected > 0:
-                                # user_id = st.session_state.user_id
-                                user_id = 1
-                                qtyBooked = qtySelected
-                                creditsSpent = qtyBooked * convertPriceToCredits(data['price'])
-                                booking_successful(data, qtyBooked)
+                    if st.button('Book Now ✅', key=book_key):
+                        if qtySelected > 0:
+                            # user_id = st.session_state.user_id
+                            user_id = 1
+                            qtyBooked = qtySelected
+                            creditsSpent = qtyBooked * convertPriceToCredits(data['price'])
+                            booking_successful(data, qtyBooked)
 
-                                # Update database
-                                qtyLeft = data['quantity'] - qtyBooked
-                                updateInventoryAfterBooking(data['inventory_id'], qtyLeft)
-                                createNewOrder(data['inventory_id'], user_id, qtyBooked, creditsSpent, False)
-                                finalCredits = retrieveUserCredits(user_id) - creditsSpent
-                                updateUserCredits(user_id, finalCredits)
+                            # Update database
+                            qtyLeft = data['quantity'] - qtyBooked
+                            updateInventoryAfterBooking(data['inventory_id'], qtyLeft)
+                            createNewOrder(data['inventory_id'], user_id, qtyBooked, creditsSpent, False)
+                            finalCredits = retrieveUserCredits(user_id) - creditsSpent
+                            updateUserCredits(user_id, finalCredits)
 
-                                # Reset after booking
-                                st.rerun()
-                            else:
-                                booking_error()
+                            # Reset after booking
+                            st.rerun()
+                        else:
+                            booking_error()
 
                     col_index = (col_index + 1) % len(cols)
 
@@ -137,7 +134,7 @@ def show_map_elems():
     distance_filter = st.slider('Select maximum distance (km)', 0, 50, 10)
 
     postings = retrieve_inventory()
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         filtered_data = show_filters(postings, 'Dietary Preferences')
@@ -148,6 +145,16 @@ def show_map_elems():
                 filtered_data, filters=['food_type'])
             dynamic_filters.display_filters()
             filtered_data = dynamic_filters.filter_df()
+    
+    with col3:
+        beneficiaryType = st.selectbox(
+            "Beneficiary Type",
+            ("NGOs", "Individuals"),
+            index=None,
+            placeholder="Beneficiary Type",
+        )
+
+        filtered_data = filter_by_beneficiary_type(beneficiaryType, postings)
 
     # st.write("Included table for visualization for now (rm ltr)")
     # st.dataframe(filtered_data)

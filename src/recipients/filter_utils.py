@@ -6,10 +6,20 @@ from streamlit_dynamic_filters import DynamicFilters
 from .recipients_utils import *
 
 
+def filter_by_beneficiary_type(beneficiaryType, df):
+    if beneficiaryType == "NGOs":
+        filtered_df = df[df['for_ngo'] == 1]  
+    elif beneficiaryType == "Individuals":
+        filtered_df = df[df['for_ngo'] == 0]  
+    else:
+        filtered_df = df  
+
+    return filtered_df
+
 def show_filters(postings, type):
     filter = {
         'Dietary Preferences': ['is_halal', 'is_vegetarian'],
-        'Type of Food': ['cooked', 'packaged']
+        'Type of Food': ['cooked', 'packaged'],
     }
 
     selected_preferences = st.multiselect(
