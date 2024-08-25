@@ -10,7 +10,6 @@ email = "e0968802@u.nus.edu "
 
 def file_report():
 
-    send_warning_email(0, datetime.now(), 1)
     if 'report_submitted' not in st.session_state:
         st.session_state.report_submitted = False
 
