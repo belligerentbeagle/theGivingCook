@@ -16,7 +16,7 @@ def view_donations_page():
             donations_df = pd.DataFrame(donations, columns=[
                 "id", "Food Name", "Food Type", "Description", "Is Halal", 
                 "Is Vegetarian", "Expiry Date", "Date of Entry", 
-                "Total Quantity", "Current Quantity", "QR Code"
+                "Total Quantity", "Qty Left After Booking", "Qty Left After Scanning", "QR Code"
             ])
             donations_df["Is Halal"] = donations_df["Is Halal"].apply(lambda x: "True" if x == 1 else "False")
             donations_df["Is Vegetarian"] = donations_df["Is Vegetarian"].apply(lambda x: "True" if x == 1 else "False")
@@ -31,7 +31,7 @@ def view_donations_page():
             table_html += "</tr></thead>"
 
             table_html += "<tbody>"
-            for index, row in donations_df.iterrows():
+            for _, row in donations_df.iterrows():
                 table_html += "<tr>"
                 for col in donations_df.columns.drop("QR Code"):
                     table_html += f"<td>{row[col]}</td>"
