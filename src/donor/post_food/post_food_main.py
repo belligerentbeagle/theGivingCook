@@ -55,6 +55,7 @@ def show_form_page():
             st.session_state.image = image
             st.session_state.recipient = recipient
             st.session_state.post_food_form_submitted = True
+            st.rerun()
 
 
 
