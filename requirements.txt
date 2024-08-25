@@ -8,4 +8,5 @@ shapely
 streamlit-dynamic-filters
 qrcode
 watchdog
-streamlit_authenticator
+streamlit-authenticator
+streamlit-qrcode-scanner
