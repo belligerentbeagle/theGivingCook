@@ -6,6 +6,7 @@ def createTables(cur):
     cur.execute("""
         CREATE TABLE IF NOT EXISTS vendor(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
             name TEXT NOT NULL,
             hp_number TEXT NOT NULL,
             address TEXT NOT NULL,
@@ -19,6 +20,7 @@ def createTables(cur):
     cur.execute("""
         CREATE TABLE IF NOT EXISTS user(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
             first_name TEXT NOT NULL,
             last_name TEXT NOT NULL,
             hp_number TEXT NOT NULL,
@@ -34,6 +36,7 @@ def createTables(cur):
     cur.execute("""
         CREATE TABLE IF NOT EXISTS ngo(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
             name TEXT NOT NULL,
             hp_number TEXT NOT NULL,
             address TEXT NOT NULL,
@@ -116,33 +119,33 @@ def createTables(cur):
 def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
-        INSERT INTO vendor (name, hp_number, address, cuisine, description, password) VALUES
-        ('McDonalds', '+65 91234567', '5 Tampines Street 32, #01-01 Tampines Mart, Singapore 529284', 'Italian', 'A cozy place with homemade pasta', 'password'),
-        ('KFC', '+65 98765432', '4 Tampines Central 5, #01-47 Tampines Mall, Singapore 529510', 'American', 'Gourmet burgers and fries', 'password'),
-        ('Four Fingers', '+65 82345678', '277 Orchard Road, Gateway, #01-04/05 Orchard, 238858', 'Japanese', 'Fresh sushi and sashimi', 'password'),
-        ('Subway', '+65 91258765', '5 Tampines Street 32, #01-21 Tampines Mart, Singapore 529284', 'Chinese', 'Traditional dim sum and tea', 'password'),
-        ('Taj Mahal', '+65 93458765', '820 Tampines Street 81, Singapore 520820', 'Indian', 'Authentic North Indian cuisine', 'password'),
-        ('La Fiesta', '+65 90254875', '3 Kaki Bukit Rd 2, #01-05B Eunos Warehouse, Singapore 417837', 'Mexican', 'Spicy tacos and fresh guacamole', 'password'),
-        ('Patisserie Valerie', '+65 94752865', '61 Ubi Avenue 2, #01-13 Automobile Megamart, 408898', 'French', 'Elegant pastries and desserts', 'password'),
-        ('Cairo Grill', '+65 86578439', '10 Kaki Bukit Ave 4, #03-60, Singapore 415874', 'Middle Eastern', 'Kebabs and meze platter', 'password'),
-        ('Seoul Food', '+65 96547832', '739A Bedok Reservoir Rd, #01-01, Singapore 471739', 'Korean', 'BBQ and kimchi specials', 'password'),
-        ('Bangkok Bites', '+65 81345672', '901 Bedok Reservoir Rd, Singapore 479266', 'Thai', 'Tom Yum Goong and Pad Thai', 'password')
+        INSERT INTO vendor (username, name, hp_number, address, cuisine, description, password) VALUES
+        ('mcdonald', 'McDonalds', '+65 91234567', '5 Tampines Street 32, #01-01 Tampines Mart, Singapore 529284', 'Italian', 'A cozy place with homemade pasta', 'password'),
+        ('kfc', 'KFC', '+65 98765432', '4 Tampines Central 5, #01-47 Tampines Mall, Singapore 529510', 'American', 'Gourmet burgers and fries', 'password'),
+        ('fourfingers', 'Four Fingers', '+65 82345678', '277 Orchard Road, Gateway, #01-04/05 Orchard, 238858', 'Japanese', 'Fresh sushi and sashimi', 'password'),
+        ('subway', 'Subway', '+65 91258765', '5 Tampines Street 32, #01-21 Tampines Mart, Singapore 529284', 'Chinese', 'Traditional dim sum and tea', 'password'),
+        ('tajmahal', 'Taj Mahal', '+65 93458765', '820 Tampines Street 81, Singapore 520820', 'Indian', 'Authentic North Indian cuisine', 'password'),
+        ('lafiesta', 'La Fiesta', '+65 90254875', '3 Kaki Bukit Rd 2, #01-05B Eunos Warehouse, Singapore 417837', 'Mexican', 'Spicy tacos and fresh guacamole', 'password'),
+        ('patisvalerie', 'Patisserie Valerie', '+65 94752865', '61 Ubi Avenue 2, #01-13 Automobile Megamart, 408898', 'French', 'Elegant pastries and desserts', 'password'),
+        ('cairogrill', 'Cairo Grill', '+65 86578439', '10 Kaki Bukit Ave 4, #03-60, Singapore 415874', 'Middle Eastern', 'Kebabs and meze platter', 'password'),
+        ('seoulfood', 'Seoul Food', '+65 96547832', '739A Bedok Reservoir Rd, #01-01, Singapore 471739', 'Korean', 'BBQ and kimchi specials', 'password'),
+        ('bangkokbites', 'Bangkok Bites', '+65 81345672', '901 Bedok Reservoir Rd, Singapore 479266', 'Thai', 'Tom Yum Goong and Pad Thai', 'password')
     """)
 
     # Insert dummy data into user table with credit_id
     cur.execute("""
-        INSERT INTO user (first_name, last_name, hp_number, age, sex, credit_id, password) VALUES
-            ('John', 'Doe', '+65 91234567', 30, 'M', 4, 'password'),
-            ('Jane', 'Smith', '+65 92345678', 25, 'F', 5, 'password'),
-            ('Alice', 'Tan', '+65 93456789', 28, 'F', 6, 'password')
+        INSERT INTO user (username, first_name, last_name, hp_number, age, sex, credit_id, password) VALUES
+            ('jsmith@gmail.com', 'John', 'Doe', '+65 91234567', 30, 'M', 4, 'password'),
+            ('janesmith@gmail.com', 'Jane', 'Smith', '+65 92345678', 25, 'F', 5, 'password'),
+            ('atan@gmail.com', 'Alice', 'Tan', '+65 93456789', 28, 'F', 6, 'password')
     """)
 
     # Insert dummy data into ngo table with credit_id
     cur.execute("""
-        INSERT INTO ngo (name, hp_number, address, number_of_ppl, credit_id, password) VALUES
-            ('Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1, 'password'),
-            ('Helping Hands', '+65 93456789', '321 Pine St', 50, 2, 'password'),
-            ('Caring Hearts', '+65 94567890', '567 Cedar Ave', 200, 3, 'password')
+        INSERT INTO ngo (username, name, hp_number, address, number_of_ppl, credit_id, password) VALUES
+            ('feedthehungry', 'Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1, 'password'),
+            ('helpinghands', 'Helping Hands', '+65 93456789', '321 Pine St', 50, 2, 'password'),
+            ('caringhearts', 'Caring Hearts', '+65 94567890', '567 Cedar Ave', 200, 3, 'password')
     """)
 
     # Insert dummy data into credits table
