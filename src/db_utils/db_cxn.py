@@ -9,7 +9,8 @@ def createTables(cur):
             hp_number TEXT NOT NULL,
             address TEXT NOT NULL,
             cuisine TEXT NOT NULL,
-            description TEXT
+            description TEXT,
+            password TEXT NOT NULL
         )
     """)
 
@@ -23,6 +24,7 @@ def createTables(cur):
             age INTEGER NOT NULL,
             sex TEXT NOT NULL,
             credit_id INTEGER,
+            password TEXT NOT NULL,
             FOREIGN KEY (credit_id) REFERENCES credits(id)
         )
     """)
@@ -36,6 +38,7 @@ def createTables(cur):
             address TEXT NOT NULL,
             number_of_ppl INTEGER NOT NULL,
             credit_id INTEGER,
+            password TEXT NOT NULL,
             FOREIGN KEY (credit_id) REFERENCES credits(id)
         )
     """)
@@ -111,26 +114,26 @@ def createTables(cur):
 def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
-        INSERT INTO vendor (name, hp_number, address, cuisine, description) VALUES
-            ('The Fancy Fork', '+65 91234567', '123 Main St', 'italian', 'A cozy place with homemade pasta'),
-            ('Burger Bliss', '+65 98765432', '456 Elm St', 'american', 'Gourmet burgers and fries'),
-            ('Sushi Zen', '+65 82345678', '789 Sakura Lane', 'japanese', 'Fresh sushi and sashimi')
+        INSERT INTO vendor (name, hp_number, address, cuisine, description, password) VALUES
+            ('The Fancy Fork', '+65 91234567', '123 Main St', 'italian', 'A cozy place with homemade pasta', 'password'),
+            ('Burger Bliss', '+65 98765432', '456 Elm St', 'american', 'Gourmet burgers and fries', 'password'),
+            ('Sushi Zen', '+65 82345678', '789 Sakura Lane', 'japanese', 'Fresh sushi and sashimi', 'password')
     """)
 
     # Insert dummy data into user table with credit_id
     cur.execute("""
-        INSERT INTO user (first_name, last_name, hp_number, age, sex, credit_id) VALUES
-            ('John', 'Doe', '+65 91234567', 30, 'M', 4),
-            ('Jane', 'Smith', '+65 92345678', 25, 'F', 5),
-            ('Alice', 'Tan', '+65 93456789', 28, 'F', 6)
+        INSERT INTO user (first_name, last_name, hp_number, age, sex, credit_id, password) VALUES
+            ('John', 'Doe', '+65 91234567', 30, 'M', 4,'password'),
+            ('Jane', 'Smith', '+65 92345678', 25, 'F', 5,'password'),
+            ('Alice', 'Tan', '+65 93456789', 28, 'F', 6,'password')
     """)
 
     # Insert dummy data into ngo table with credit_id
     cur.execute("""
-        INSERT INTO ngo (name, hp_number, address, number_of_ppl, credit_id) VALUES
-            ('Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1),
-            ('Helping Hands', '+65 93456789', '321 Pine St', 50, 2),
-            ('Caring Hearts', '+65 94567890', '567 Cedar Ave', 200, 3)
+        INSERT INTO ngo (name, hp_number, address, number_of_ppl, credit_id, password) VALUES
+            ('Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1,'password'),
+            ('Helping Hands', '+65 93456789', '321 Pine St', 50, 2,'password'),
+            ('Caring Hearts', '+65 94567890', '567 Cedar Ave', 200, 3,'password')
     """)
 
     # Insert dummy data into credits table
