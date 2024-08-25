@@ -70,7 +70,7 @@ def show_posting(filtered_data):
         current_col = cols[col_index]
 
         with current_col:
-            with st.container(border=True, height=500):
+            with st.container(border=True, height=450):
                 # Display content and custom buttons
                 st.image(
                     data['photo'], use_column_width=True) if 'photo' in data else None
@@ -148,7 +148,7 @@ def show_map_elems():
     
     with col3:
         beneficiaryType = st.selectbox(
-            "Beneficiary Type",
+            "Select Beneficiary Type",
             ("NGOs", "Individuals"),
             index=None,
             placeholder="Beneficiary Type",
@@ -166,7 +166,12 @@ def show_map_with_location(postings, user_location, distance_filter):
     # st.write(f"User coordinates: {user_location}")
     vendors = filter_by_distance(postings, user_location, distance_filter)
     # remove photo from df for scatterplot processing
-    vendors_no_photo = vendors.drop(columns=['photo'])
+    if 'photo' in vendors:
+        vendors_no_photo = vendors.drop(columns=['photo'])
+    else:
+        vendors_no_photo = vendors_no_photo = pd.DataFrame()
+        st.write("There are no current available food collection vendors.")
+
     # max_distance = max([geodesic(user_location, (res['latitude'], # shouldnt include this so that we can still see postings outside of indicated radius
     #                     res['longitude'])).km for res in vendors], default=0)
     zoom_level = calculate_zoom_level(distance_filter)
@@ -184,14 +189,20 @@ def show_map_with_location(postings, user_location, distance_filter):
         tooltip="User Location"
     )
 
+    layers = [user_location_layer]
+
     # Vendor locations layer
-    vendor_layer = pdk.Layer(
-        'ScatterplotLayer',
-        data=vendors_no_photo,
-        get_position='[longitude, latitude]',
-        get_color='[200, 30, 0, 160]',
-        get_radius=200,
-    )
+    if not vendors_no_photo.empty:
+        vendor_layer = pdk.Layer(
+            'ScatterplotLayer',
+            data=vendors_no_photo,
+            get_position='[longitude, latitude]',
+            get_color='[200, 30, 0, 160]',
+            get_radius=200,
+        )
+        layers.append(vendor_layer)
+    else:
+        st.write("There are no available items now.")
 
     # Circle layer
     circle = create_geojson_circle(user_location, distance_filter)
@@ -202,32 +213,42 @@ def show_map_with_location(postings, user_location, distance_filter):
         filled=True,
         get_fill_color=[255, 180, 0, 140]
     )
+    layers.append(circle_layer)
 
     st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/streets-v12',
                              initial_view_state=view_state,
-                             layers=[user_location_layer, vendor_layer, circle_layer]))
+                             layers=layers))
     return vendors
 
 
 def show_default_map(postings):
     singapore = [1.3521, 103.8198]
     # remove photo from df for scatterplot processing
-    vendors_no_photo = postings.drop(columns=['photo'])
+    if not postings.empty and 'photo' in postings:
+        vendors_no_photo = postings.drop(columns=['photo'])
+    else:
+        vendors_no_photo = pd.DataFrame()
+        st.write("There are no current available food collection vendors.")
+
     view_state = pdk.ViewState(
         latitude=singapore[0], longitude=singapore[1], zoom=10.5)
 
+    layer = []
     # Vendor locations layer
-    vendor_layer = pdk.Layer(
-        'ScatterplotLayer',
-        data=vendors_no_photo,
-        get_position='[longitude, latitude]',
-        get_color='[200, 30, 0, 160]',
-        get_radius=200,
-    )
+    if not vendors_no_photo.empty:
+        vendor_layer = pdk.Layer(
+            'ScatterplotLayer',
+            data=vendors_no_photo,
+            get_position='[longitude, latitude]',
+            get_color='[200, 30, 0, 160]',
+            get_radius=200,
+        )
+        layer.append(vendor_layer)
+        
 
     st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/streets-v12',
                              initial_view_state=view_state,
-                             layers=[vendor_layer]))
+                             layers=layer))
 
 # def show_default_map(postings):
 #     singapore = [1.3521, 103.8198]
