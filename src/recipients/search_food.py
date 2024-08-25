@@ -70,7 +70,7 @@ def show_posting(filtered_data):
         current_col = cols[col_index]
 
         with current_col:
-            with st.container(border=True, height=400):
+            with st.container(border=True, height=500):
                 # Display content and custom buttons
                 st.image(
                     data['photo'], use_column_width=True) if 'photo' in data else None
@@ -85,37 +85,21 @@ def show_posting(filtered_data):
                 # Interaction buttons with custom functionality
                 with st.container():
                     counter_key = f"counter_{data['inventory_id']}"
-                    decrement_key = f"decrement_{data['inventory_id']}"
-                    increment_key = f"increment_{data['inventory_id']}"
                     book_key = f"book_{data['inventory_id']}"
 
-                    # Initialize the counter in the session state if not already initialized
-                    if counter_key not in st.session_state:
-                        st.session_state[counter_key] = 0
+                    qtyButton, bookBtn = st.columns([3, 0.5])
+                    qtySelected = 0
 
-                    col_btn_left, col_count, col_btn_right, book_btn = st.columns([
-                                                                                  1, 1.5, 1, 3])
+                    with qtyButton:
+                        qtySelected = st.number_input("", min_value=1, step=1, placeholder="Enter quantity", key=counter_key)
+                        print(qtySelected)
 
-                    with col_btn_left:
-                        if st.button('➖', key=decrement_key):
-                            st.session_state[counter_key] -= 1
-
-                    with col_count:
-                        count_placeholder = col_count.empty()
-                        print(f" counter : {st.session_state[counter_key]}")
-                        count_placeholder.markdown(
-                            f'<div class="count-display">{st.session_state[counter_key]}</div>', unsafe_allow_html=True)
-
-                    with col_btn_right:
-                        if st.button('➕', key=increment_key):
-                            st.session_state[counter_key] += 1
-
-                    with book_btn:
-                        if st.button('Book', key=book_key):
-                            if st.session_state[counter_key] > 0:
+                    with bookBtn:
+                        if st.button('Book Now ✅', key=book_key):
+                            if qtySelected > 0:
                                 # user_id = st.session_state.user_id
                                 user_id = 1
-                                qtyBooked = st.session_state[counter_key]
+                                qtyBooked = qtySelected
                                 creditsSpent = qtyBooked * convertPriceToCredits(data['price'])
                                 booking_successful(data, qtyBooked)
 
@@ -127,9 +111,6 @@ def show_posting(filtered_data):
                                 updateUserCredits(user_id, finalCredits)
 
                                 # Reset after booking
-                                st.session_state[counter_key] = 0
-                                count_placeholder.markdown(
-                                    f'<div class="count-display">{st.session_state[counter_key]}</div>', unsafe_allow_html=True)
                                 st.rerun()
                             else:
                                 booking_error()
