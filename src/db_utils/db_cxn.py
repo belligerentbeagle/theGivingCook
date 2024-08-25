@@ -79,7 +79,7 @@ def createTables(cur):
             curr_qty INTEGER NOT NULL,
             vendor_id INTEGER NOT NULL,
             photo BLOB NOT NULL,  
-            qr_code BLOB NOT NULL,
+            qr_code BLOB,
             FOREIGN KEY (vendor_id) REFERENCES vendor(id)
         )
     """)
