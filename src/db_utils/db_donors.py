@@ -4,6 +4,7 @@ from src.db_utils.image_to_blob_util import image_to_blob
 
 database_location = "src/data/theGivingCook.db"
 
+
 def connect(database_loc=database_location):
     try:
         conn = sqlite3.connect(database_loc)
@@ -11,6 +12,7 @@ def connect(database_loc=database_location):
     except Exception as e:
         print(f"Error connecting to database: {e}")
         return None
+
 
 def update_inventory_qty_individual(inventory_id, database_loc=database_location):
     try:
@@ -31,6 +33,7 @@ def update_inventory_qty_individual(inventory_id, database_loc=database_location
     except Exception as e:
         print(f"Error updating inventory quantity: {e}")
         return False
+
 
 def update_inventory_qty_ngo(inventory_id, qty, database_loc=database_location):
     try:
@@ -55,6 +58,7 @@ def update_inventory_qty_ngo(inventory_id, qty, database_loc=database_location):
         print(f"Error updating inventory quantity: {e}")
         return False
 
+
 def get_vendor_donations(vendor_id, database_loc=database_location):
     try:
         conn = connect(database_loc)
@@ -75,6 +79,7 @@ def get_vendor_donations(vendor_id, database_loc=database_location):
     except Exception as e:
         print(f"Error retrieving vendor donations: {e}")
         return None
+
 
 def get_donation_by_id(item_id, database_loc=database_location):
     try:
@@ -97,8 +102,9 @@ def get_donation_by_id(item_id, database_loc=database_location):
         print(f"Error retrieving donation: {e}")
         return None
 
-def update_inventory_item(item_id, food_name, food_type, description, is_halal, is_vegetarian, expiry_date, 
-                          total_qty, qty_left_after_booking, qty_left_after_scanning, database_loc=database_location):
+
+def update_inventory_item(item_id, food_name, food_type, description, is_halal, is_vegetarian, expiry_date,
+                          database_loc=database_location):
     try:
         conn = connect(database_loc)
         if conn is None:
@@ -108,10 +114,10 @@ def update_inventory_item(item_id, food_name, food_type, description, is_halal, 
         cur.execute("""
             UPDATE inventory
             SET food_name = ?, food_type = ?, description = ?, is_halal = ?, 
-                is_vegetarian = ?, expiry = ?, total_qty = ?, qty_left_after_booking = ?, qty_left_after_scanning = ?
+                is_vegetarian = ?, expiry = ?
             WHERE id = ?
-        """, (food_name, food_type, description, is_halal, is_vegetarian, expiry_date, 
-              total_qty, qty_left_after_booking, qty_left_after_scanning, item_id))
+        """, (food_name, food_type, description, is_halal, is_vegetarian, expiry_date,
+              item_id))
 
         conn.commit()
         conn.close()
@@ -119,6 +125,7 @@ def update_inventory_item(item_id, food_name, food_type, description, is_halal, 
     except Exception as e:
         print(f"Error updating inventory item: {e}")
         return False
+
 
 def update_vendor(vendor_id, name, hp_number, address, cuisine, description, database_loc=database_location):
     try:
@@ -138,8 +145,10 @@ def update_vendor(vendor_id, name, hp_number, address, cuisine, description, dat
         print(f"An error occurred: {e}")
         return False
 
+
 def add_new_inventory_item_without_qrcode(food_name, food_type, description, is_halal, is_vegetarian,
-                                          expiry_date, quantity, for_ngo, vendor_id, image, database_loc=database_location):
+                                          expiry_date, quantity, for_ngo, vendor_id, image,
+                                          database_loc=database_location):
     try:
         conn = connect(database_loc)
         if conn is None:
@@ -155,7 +164,7 @@ def add_new_inventory_item_without_qrcode(food_name, food_type, description, is_
                 expiry, date_of_entry, total_qty, qty_left_after_booking, 
                 qty_left_after_scanning, for_ngo, vendor_id, photo
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (food_name, food_type, description, is_halal, is_vegetarian, expiry_date, 
+        """, (food_name, food_type, description, is_halal, is_vegetarian, expiry_date,
               date_of_entry, quantity, quantity, quantity, for_ngo, vendor_id, image_blob))
 
         conn.commit()
@@ -170,6 +179,7 @@ def add_new_inventory_item_without_qrcode(food_name, food_type, description, is_
     except Exception as e:
         print(f"An error occurred: {e}")
         return False
+
 
 def update_inventory_item_with_qr_code(item_id, qr_code, database_loc=database_location):
     try:
@@ -199,6 +209,7 @@ def update_inventory_item_with_qr_code(item_id, qr_code, database_loc=database_l
             conn.close()
         return False
 
+
 def add_item_price(item_id, price, database_loc=database_location):
     try:
         conn = connect(database_loc)
@@ -226,6 +237,7 @@ def add_item_price(item_id, price, database_loc=database_location):
         if conn:
             conn.close()
         return False
+
 
 def validate_if_user_made_booking_with_inventory_id(inventory_id, user_id, database_loc=database_location):
     try:
