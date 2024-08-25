@@ -20,12 +20,12 @@ def init_recipient_page():
 
     if st.sidebar.button("Search Food", use_container_width=True):
         st.session_state.page = 'Search Food'
-    if st.sidebar.button("Manage Profile", use_container_width=True):
-        st.session_state.page = 'Manage Profile'
     if st.sidebar.button("File Report", use_container_width=True):
         st.session_state.page = 'File Report'
     if st.sidebar.button("Scan QR", use_container_width=True):
         st.session_state.page = 'Scan QR'
+    if st.sidebar.button("Manage Profile", use_container_width=True):
+        st.session_state.page = 'Manage Profile'
 
     if st.session_state.page == 'Search Food':
         search_food.view_postings()
