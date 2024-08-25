@@ -11,11 +11,11 @@ def init_donor_page():
     st.sidebar.image("src/data/assets/logo.png")
     st.sidebar.title(f"Welcome Back, {name}!")
 
-    if st.sidebar.button("Home"):
+    if st.sidebar.button("Home", use_container_width=True):
         st.session_state.page = 'Home'
-    if st.sidebar.button("Post Food"):
+    if st.sidebar.button("Post Food", use_container_width=True):
         st.session_state.page = 'Post Food'
-    if st.sidebar.button("View Donations"):
+    if st.sidebar.button("View Donations", use_container_width=True):
         st.session_state.page = 'View Donations'
     if st.session_state.page == 'Home':
         run_home_page()
