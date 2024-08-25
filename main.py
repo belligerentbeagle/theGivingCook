@@ -12,6 +12,23 @@ def main():
         st.session_state.authenticator.logout('Logout', 'sidebar')  # Ensure the logout button is visible
         app.run()
     else:
+        with st.container():
+    # Heading with bold text
+         st.markdown("<h1 style='text-align: center; font-weight: bold;'>The Giving Cook</h1>", unsafe_allow_html=True)
+    
+    # Rainbow divider
+         st.markdown(
+          """
+          <div style="
+            height: 5px; 
+            background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+            margin-bottom: 20px;">
+          </div>
+          """, 
+          unsafe_allow_html=True
+         )
+
+   
         if 'page' not in st.session_state:
             st.session_state.page = 'Log In'
 
