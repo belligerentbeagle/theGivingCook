@@ -137,3 +137,15 @@ class DatabaseConnector:
         except Exception as e:
             print(f"An error occurred: {e}")
             return False
+
+    def add_new_inventory_item_without_qrcode(self, food_name, food_type, description, is_halal, is_vegetarian,
+                                                            expiry_date, quantity, vendor_id, image):
+        try:
+            conn = self.connect()
+            if conn is None:
+                return False
+            cur = conn.cursor()
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
