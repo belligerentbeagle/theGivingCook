@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit_authenticator as stauth
 import sqlite3
+import time
 
 # Database utility functions
 def query_db(query, params=None):
@@ -58,7 +59,7 @@ def show_login_page():
     # Attempt login only if user has tried to log in
     if st.session_state.authentication_status is None:
         st.session_state.username = None
-        name, authentication_status, username = authenticator.login()
+        name, authentication_status, username = authenticator.login(key = time.time())
         st.session_state.authentication_status = authentication_status
 
         if authentication_status:
