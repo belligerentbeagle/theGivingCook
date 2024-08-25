@@ -17,7 +17,4 @@ def generate_qr_code(link):
     qr.add_data(full_link)
     qr.make(fit=True)
     img = qr.make_image(fill='black', back_color='white')
-    buf = BytesIO()
-    img.save(buf, format="PNG")
-    byte_im = buf.getvalue()
-    return byte_im
+    return img
