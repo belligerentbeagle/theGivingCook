@@ -4,39 +4,38 @@ import streamlit as st
 def profile_management():
     st.title("Profile Management")
 
-    option = st.selectbox("Select profile to edit", ("User", "NGO", "Vendor"))
+    option = st.session_state.role
 
-    if option == "User":
+    if option == "user":
         # user_id = st.number_input("User ID", min_value=1, step=1)
         first_name = st.text_input("First Name", placeholder="Enter first name", value="Ethan")
         last_name = st.text_input("Last Name", placeholder="Enter last name", value="Wei")
-        hp_number = st.text_input("HP Number", placeholder="Enter phone number")
-        age = st.number_input("Age", min_value=1, max_value=120, step=1, placeholder="Enter age")
+        hp_number = st.text_input("HP Number", placeholder="Enter phone number", value="+65 91327543")
+        age = st.number_input("Age", min_value=16, max_value=120, step=1, placeholder="Enter age")
         sex = st.selectbox("Sex", ["M", "F"], index=0)
 
         if st.button("Update User"):
             # updateUser(user_id, first_name, last_name, hp_number, age, sex)
             st.success(f"User {first_name} {last_name} updated successfully.")
 
-    elif option == "NGO":
+    elif option == "ngo":
         # ngo_id = st.number_input("NGO ID", min_value=1, step=1)
         name = st.text_input("Name", placeholder="Enter NGO name", value="TheChangeMakers Org")
-        hp_number = st.text_input("HP Number", placeholder="Enter phone number")
-        address = st.text_input("Address", placeholder="Enter address")
+        hp_number = st.text_input("HP Number", placeholder="Enter phone number", value="+65 91327543")
+        address = st.text_input("Address", placeholder="Enter address", value="125 Marine Parade Ave 2 #01-22/23")
         number_of_ppl = st.number_input("Number of People", min_value=1, step=1, placeholder="Enter number of people")
-        credit_id = st.number_input("Credit ID", min_value=1, step=1, placeholder="Enter credit ID")
 
         if st.button("Update NGO"):
             # updateNgo(ngo_id, name, hp_number, address, number_of_ppl, credit_id)
             st.success(f"NGO {name} updated successfully.")
 
-    elif option == "Vendor":
+    elif option == "vendor":
         # vendor_id = st.number_input("Vendor ID", min_value=1, step=1)
         name = st.text_input("Name", placeholder="Enter vendor name", value="Krusty Krabs (Bedok)")
-        hp_number = st.text_input("HP Number", placeholder="Enter phone number")
-        address = st.text_input("Address", placeholder="Enter address")
-        cuisine = st.text_input("Cuisine", placeholder="Enter type of cuisine")
-        description = st.text_area("Description", placeholder="Enter description")
+        hp_number = st.text_input("HP Number", placeholder="Enter phone number", value="+65 91327543")
+        address = st.text_input("Address", placeholder="Enter address", value="125 Bedok South Ave 2 #01-22/23")
+        cuisine = st.text_input("Cuisine", placeholder="Enter type of cuisine", value="Western, Seafood")
+        description = st.text_area("Description", placeholder="Enter description", value="Krusty Krabs combines healthy cooking and great ingredients to serve up quality Western food that is accessible to everyone.")
 
         if st.button("Update Vendor"):
             # updateVendor(vendor_id, name, hp_number, address, cuisine, description)
