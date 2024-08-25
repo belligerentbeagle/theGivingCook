@@ -1,6 +1,11 @@
 from .recipients_utils import *
 from .map_utils import *
-from src.db_utils.db_recipients import retrieveAllVendors, retrieveAvailableInventory
+from .filter_utils import *
+from src.db_utils.db_recipients import retrieveAvailableInventory, updateUserCredits, updateInventoryAfterBooking, createNewOrder, retrieveUserCredits
+
+# import folium
+# from folium.plugins import MarkerCluster
+# from streamlit_folium import st_folium
 
 import streamlit as st
 import pydeck as pdk
@@ -19,7 +24,131 @@ def view_postings():
     if all(x is None for x in user_location):
         show_default_map(filtered_data)
     else:
-        show_map_with_location(filtered_data, user_location, distance_filter)
+        filtered_data = show_map_with_location(
+            filtered_data, user_location, distance_filter)
+
+    show_posting(filtered_data)
+
+
+def setup_custom_buttons():
+    st.markdown("""
+    <style>
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 1rem !important;
+        }
+        .stButton>button {
+            width: 100%;
+            margin: 0;
+        }
+        .stMarkdown {
+            padding: 0 !important;
+        }
+    }
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .count-display {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+
+def show_posting(filtered_data):
+    setup_custom_buttons()  
+
+    cols = st.columns(3)
+    col_index = 0
+
+    for index, data in filtered_data.iterrows():
+        current_col = cols[col_index]
+
+        with current_col:
+            with st.container(border=True, height=400):
+                # Display content and custom buttons
+                st.image(
+                    data['photo'], use_column_width=True) if 'photo' in data else None
+                st.markdown(f"##### {data['food_name']}")
+                st.markdown(
+                    f"<div style='font-size: small;'>{data['description']}</div>", unsafe_allow_html=True)
+                st.caption(
+                    f"{convertPriceToCredits(data['price'])} Credit | Expiry: {data['expiry_date']} | Quantity Left: {data['quantity']} units")
+                st.markdown(
+                    f"<div style='font-size: small;'>{data['address']}</div>", unsafe_allow_html=True)
+
+                # Interaction buttons with custom functionality
+                with st.container():
+                    counter_key = f"counter_{data['inventory_id']}"
+                    decrement_key = f"decrement_{data['inventory_id']}"
+                    increment_key = f"increment_{data['inventory_id']}"
+                    book_key = f"book_{data['inventory_id']}"
+
+                    # Initialize the counter in the session state if not already initialized
+                    if counter_key not in st.session_state:
+                        st.session_state[counter_key] = 0
+
+                    col_btn_left, col_count, col_btn_right, book_btn = st.columns([
+                                                                                  1, 1.5, 1, 3])
+
+                    with col_btn_left:
+                        if st.button('➖', key=decrement_key):
+                            st.session_state[counter_key] -= 1
+
+                    with col_count:
+                        count_placeholder = col_count.empty()
+                        print(f" counter : {st.session_state[counter_key]}")
+                        count_placeholder.markdown(
+                            f'<div class="count-display">{st.session_state[counter_key]}</div>', unsafe_allow_html=True)
+
+                    with col_btn_right:
+                        if st.button('➕', key=increment_key):
+                            st.session_state[counter_key] += 1
+
+                    with book_btn:
+                        if st.button('Book', key=book_key):
+                            if st.session_state[counter_key] > 0:
+                                # user_id = st.session_state.user_id
+                                user_id = 1
+                                qtyBooked = st.session_state[counter_key]
+                                creditsSpent = qtyBooked * convertPriceToCredits(data['price'])
+                                booking_successful(data, qtyBooked)
+
+                                # Update database
+                                qtyLeft = data['quantity'] - qtyBooked
+                                updateInventoryAfterBooking(data['inventory_id'], qtyLeft)
+                                createNewOrder(data['inventory_id'], user_id, qtyBooked, creditsSpent, False)
+                                finalCredits = retrieveUserCredits(user_id) - creditsSpent
+                                updateUserCredits(user_id, finalCredits)
+
+                                # Reset after booking
+                                st.session_state[counter_key] = 0
+                                count_placeholder.markdown(
+                                    f'<div class="count-display">{st.session_state[counter_key]}</div>', unsafe_allow_html=True)
+                                st.rerun()
+                            else:
+                                booking_error()
+
+                    col_index = (col_index + 1) % len(cols)
+
+
+@st.dialog("Booking Error!")
+def booking_error():
+    st.error("You must select at least one item to book.")
+
+
+@st.dialog("Thank you for booking!")
+def booking_successful(item, qty):
+    st.write(
+        f"You have successfully booked {qty} units of {item['food_name']}. This costs {qty * convertPriceToCredits(item['price'])} credits.")
+    st.write(f"Please scan the QR code at the venue upon collection.")
+    st.write(f"Your collection point is:")
+    st.write(item['address'])
 
 
 def show_map_elems():
@@ -37,39 +166,19 @@ def show_map_elems():
             dynamic_filters = DynamicFilters(
                 filtered_data, filters=['food_type'])
             dynamic_filters.display_filters()
+            filtered_data = dynamic_filters.filter_df()
 
-    st.write("Included table for visualization for now (rm ltr)")
-    st.dataframe(filtered_data)
+    # st.write("Included table for visualization for now (rm ltr)")
+    # st.dataframe(filtered_data)
 
     return distance_filter, filtered_data
-
-
-def show_filters(postings, type):
-    filter = {
-        'Dietary Preferences': ['is_halal', 'is_vegetarian'],
-        'Type of Food': ['cooked', 'packaged']
-    }
-
-    selected_preferences = st.multiselect(
-        f"Select {type}:",
-        options=filter[type],
-        default=[]
-    )
-
-    if selected_preferences:
-        filtered_data = postings
-        for preference in selected_preferences:
-            filtered_data = filtered_data[filtered_data[preference] == 1]
-    else:
-        # If no preference is selected, show all data
-        filtered_data = postings
-
-    return filtered_data
 
 
 def show_map_with_location(postings, user_location, distance_filter):
     # st.write(f"User coordinates: {user_location}")
     vendors = filter_by_distance(postings, user_location, distance_filter)
+    # remove photo from df for scatterplot processing
+    vendors_no_photo = vendors.drop(columns=['photo'])
     # max_distance = max([geodesic(user_location, (res['latitude'], # shouldnt include this so that we can still see postings outside of indicated radius
     #                     res['longitude'])).km for res in vendors], default=0)
     zoom_level = calculate_zoom_level(distance_filter)
@@ -90,7 +199,7 @@ def show_map_with_location(postings, user_location, distance_filter):
     # Vendor locations layer
     vendor_layer = pdk.Layer(
         'ScatterplotLayer',
-        data=vendors,
+        data=vendors_no_photo,
         get_position='[longitude, latitude]',
         get_color='[200, 30, 0, 160]',
         get_radius=200,
@@ -109,18 +218,20 @@ def show_map_with_location(postings, user_location, distance_filter):
     st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/streets-v12',
                              initial_view_state=view_state,
                              layers=[user_location_layer, vendor_layer, circle_layer]))
+    return vendors
 
 
 def show_default_map(postings):
     singapore = [1.3521, 103.8198]
-    vendors = postings
+    # remove photo from df for scatterplot processing
+    vendors_no_photo = postings.drop(columns=['photo'])
     view_state = pdk.ViewState(
         latitude=singapore[0], longitude=singapore[1], zoom=10.5)
 
     # Vendor locations layer
     vendor_layer = pdk.Layer(
         'ScatterplotLayer',
-        data=vendors,
+        data=vendors_no_photo,
         get_position='[longitude, latitude]',
         get_color='[200, 30, 0, 160]',
         get_radius=200,
@@ -130,37 +241,36 @@ def show_default_map(postings):
                              initial_view_state=view_state,
                              layers=[vendor_layer]))
 
+# def show_default_map(postings):
+#     singapore = [1.3521, 103.8198]
+#     # Create a map centered around Singapore
+#     m = folium.Map(location=singapore, zoom_start=12, tiles='CartoDB positron')
 
-def filter_by_distance(postings, user_location, max_distance):
-    filtered_postings = []
+#     # If your dataframe has columns named 'latitude' and 'longitude', this will work directly
+#     # Create a MarkerCluster to add all your vendors
+#     marker_cluster = MarkerCluster().add_to(m)
 
-    for index, row in postings.iterrows():
-        lat, lon = convert_address_to_latlong(row['address'])
+#     # Loop through the data frame
+#     for idx, row in postings.iterrows():
+#         # Create an HTML string for the popup
+#         popup_html = f"""
+#         <div style='width:200px;'><strong></strong><br>
+#             {row['description']}<br>
+#             Price: {row['price']}<br>
+#             Address: {row['address']}<br>
+#         </div>
+#         """
+#         popup = folium.Popup(popup_html, max_width=265)
+#         folium.Marker(
+#             location=[row['latitude'], row['longitude']],
+#             popup=popup,
+#             icon=folium.Icon(icon='info-sign', color='red')
+#         ).add_to(marker_cluster)
 
-        if lat is not None and lon is not None:
-            if max_distance is not None and user_location is not None:
-                distance = geodesic(user_location, (lat, lon)).km
-                # if distance > max_distance:
-                #     continue  # Skip this posting if it's outside the max distance
+#     # Display the map
+#     st_folium(m, width=725)
 
-            filtered_postings.append({
-                'inventory_id': row['inventory_id'],
-                'food_name': row['food_name'],
-                'food_type': row['food_type'],
-                'description': row['description'],
-                'is_halal': row['is_halal'],
-                'is_vegetarian': row['is_vegetarian'],
-                'expiry_date': row['expiry_date'],
-                'date_of_entry': row['date_of_entry'],
-                'quantity': row['quantity'],
-                'address': row['address'],
-                'latitude': lat,
-                'longitude': lon,
-                'vendor_id': row['vendor_id'],
-                # 'photo': row['photo']
-            })
 
-    return filtered_postings
 
 
 def retrieve_inventory(user_location=None, max_distance=None):
@@ -168,7 +278,7 @@ def retrieve_inventory(user_location=None, max_distance=None):
 
     postings = []
     for (inv_id, food_name, food_type, description, is_halal, is_veg, expiry,
-         date_of_entry, qty_left_after_booking, qty_left_after_scanning, for_ngo, vendor_id, photo, address) in allInventory:
+        date_of_entry, qty_left_after_booking, qty_left_after_scanning, for_ngo, vendor_id, photo, address, price) in allInventory:
 
         lat, lon = convert_address_to_latlong(address)
         if lat is not None and lon is not None:
@@ -191,8 +301,10 @@ def retrieve_inventory(user_location=None, max_distance=None):
                 'address': address,
                 'latitude': lat,
                 'longitude': lon,
-                'vendor_id': vendor_id
-                # 'photo': photo
+                'vendor_id': vendor_id,
+                'photo': photo,
+                'price': price
+
             })
 
     # print(postings)

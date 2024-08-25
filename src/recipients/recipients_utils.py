@@ -1,4 +1,5 @@
 from datetime import datetime
+import math
 import requests
 import urllib.parse
 from streamlit_geolocation import streamlit_geolocation
@@ -33,3 +34,20 @@ def retrieve_current_location():
     res = [location["latitude"], location["longitude"]]
 
     return res
+
+def convertPriceToCredits(price):
+    return math.floor(price)
+
+def separate_with_without_photos(postings):
+    with_photos = []
+    without_photos = []
+
+    for row in postings:
+        row_without_photo = row.copy()
+        row_without_photo.pop('photo', None)
+        if row['photo']:
+            with_photos.append(row)
+        else:
+            without_photos.append(row_without_photo)
+
+    return with_photos, without_photos

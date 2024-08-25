@@ -117,7 +117,6 @@ def createTables(cur):
             )
         """)
 
-
 def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
@@ -172,22 +171,22 @@ def insertDummyData(cur):
     """)
 
     # Read actual image files in binary mode
-    with open("../data/assets/pasta.jpeg", "rb") as file:
+    with open(f"../data/assets/pasta.jpeg", "rb") as file:
         pasta = file.read()
 
-    with open("../data/assets/ketchup.png", "rb") as file:
+    with open(f"../data/assets/ketchup.png", "rb") as file:
         tomatosauce = file.read()
 
-    with open("../data/assets/milo.jpeg", "rb") as file:
+    with open(f"../data/assets/milo.jpeg", "rb") as file:
         milo = file.read()
 
-    with open("../data/assets/xiumai.png", "rb") as file:
+    with open(f"../data/assets/xiumai.png", "rb") as file:
         xiumai = file.read()
 
-    with open("../data/assets/naanbread.png", "rb") as file:
+    with open(f"../data/assets/naanbread.png", "rb") as file:
         naan = file.read()
 
-    with open("../data/assets/qrcode.png", "rb") as file:
+    with open(f"../data/assets/qrcode.png", "rb") as file:
         qr = file.read()
 
     # Insert dummy data into inventory table with real image data
@@ -254,7 +253,7 @@ def insertDummyData(cur):
 
 
 def setupDB():
-    con = sqlite3.connect("../data/theGivingCook.db")
+    con = sqlite3.connect(f"../data/theGivingCook.db")
     cur = con.cursor()
 
     # Drop tables if they exist

@@ -2,9 +2,7 @@
 
 import sqlite3
 
-FILEPATH = "/Users/apple/Desktop/NUS/Job Search Essentials/Y3 Summer/Projects/theGivingCook/src"
-
-database_loc = f"{FILEPATH}/data/theGivingCook.db"
+database_loc = f"../data/theGivingCook.db"
 
 
 def createNewNgoUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
@@ -63,9 +61,10 @@ def retrieveAvailableInventory(date):
                 inventory.id, inventory.food_name, inventory.food_type, inventory.description, 
                 inventory.is_halal, inventory.is_vegetarian, inventory.expiry, 
                 inventory.date_of_entry, inventory.qty_left_after_booking, inventory.qty_left_after_scanning, for_ngo, inventory.vendor_id, inventory.photo, 
-                vendor.address
+                vendor.address, price_inventory.price
             FROM inventory 
             JOIN vendor ON inventory.vendor_id = vendor.id
+            LEFT JOIN price_inventory ON inventory.id = price_inventory.food_id
             WHERE inventory.qty_left_after_booking > 0 AND inventory.expiry > ?
         """, (date,))
         rows = cur.fetchall()
@@ -125,3 +124,78 @@ def updateUser(user_id, first_name, last_name, hp_number, age, sex, database_loc
     except Exception as e:
         print(f"An error occurred: {e}")
         return False
+
+
+def updateInventoryAfterBooking(id, qtyLeft):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE inventory
+            SET qty_left_after_booking = ?
+            WHERE id = ?
+        """, (qtyLeft, id))
+        conn.commit() 
+        conn.close() 
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+
+
+def createNewOrder(item_id, user_id, qty, credits_spent, is_complete):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO orders(item_id, user_id, qty, credits_spent, is_complete)
+            VALUES(?, ?, ?, ?, ?)
+        """, (item_id, user_id, qty, credits_spent, is_complete))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+
+
+def updateUserCredits(user_id, credit_value):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE ngo
+            SET credit_value = ?
+            WHERE id = ?
+        """, (credit_value, user_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+
+
+def retrieveUserCredits(user_id):
+    conn = sqlite3.connect(database_loc)
+    cur = conn.cursor()
+    query = """
+    SELECT 
+        credits.credit_value
+    FROM 
+        user
+    JOIN 
+        credits ON user.credit_id = credits.id
+    WHERE 
+        user.id = ?;
+    """
+    cur.execute(query, (user_id,))
+    result = cur.fetchone()  
+    conn.close()
+    
+    if result:
+        print(f"Credit Value: {result[0]}")
+        return result[0]
+    else:
+        print("No user found with that ID.")
+        return None

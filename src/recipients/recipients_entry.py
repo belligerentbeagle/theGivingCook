@@ -3,6 +3,9 @@ from src.recipients import search_food
 from src.recipients.report_form.report_form import file_report
 from src.ProfileManagement import profile_management
 from src.recipients.scan_qr import scan_qr
+from .report_form import report_form, report_form_success
+
+
 
 def init_recipient_page():
     # Get user's name from session state and set default page if not set
@@ -31,3 +34,4 @@ def init_recipient_page():
         scan_qr()
     elif st.session_state.page == 'File Report':
         file_report()
+        report_form.file_report()
