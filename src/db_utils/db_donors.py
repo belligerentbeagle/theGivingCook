@@ -21,8 +21,8 @@ class DatabaseConnector:
 
             cur.execute("""
                 UPDATE inventory
-                SET curr_qty = curr_qty - 1
-                WHERE id = ? AND curr_qty > 0
+                SET qty_left_after_scanning = qty_left_after_scanning - 1
+                WHERE id = ? AND qty_left_after_scanning > 0
             """, (inventory_id,))
 
             conn.commit()
@@ -41,8 +41,8 @@ class DatabaseConnector:
 
             cur.execute("""
                 UPDATE inventory
-                SET curr_qty = CASE
-                            WHEN curr_qty > ? THEN curr_qty - ?
+                SET qty_left_after_scanning = CASE
+                            WHEN qty_left_after_scanning > ? THEN qty_left_after_scanning - ?
                             ELSE 0
                         END
                 WHERE id = ?
@@ -63,7 +63,7 @@ class DatabaseConnector:
             cur = conn.cursor()
 
             cur.execute("""
-                SELECT id, food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, total_qty, curr_qty, qr_code
+                SELECT id, food_name, food_type, description, is_halal, is_vegetarian, expiry, date_of_entry, total_qty, qty_left_after_booking, qty_left_after_scanning, qr_code
                 FROM inventory
                 WHERE vendor_id = ?
             """, (vendor_id,))
@@ -86,7 +86,7 @@ class DatabaseConnector:
 
             cur.execute("""
                 SELECT id, food_name, food_type, description, is_halal, is_vegetarian, 
-                       expiry, date_of_entry, total_qty, curr_qty, qr_code
+                       expiry, date_of_entry, total_qty, qty_left_after_booking, qty_left_after_scanning, qr_code
                 FROM inventory
                 WHERE id = ?
             """, (item_id,))
@@ -98,7 +98,7 @@ class DatabaseConnector:
             print(f"Error retrieving donation: {e}")
             return None
 
-    def update_inventory_item(self, item_id, food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty, curr_qty):
+    def update_inventory_item(self, item_id, food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty, qty_left_after_booking, qty_left_after_scanning,):
         try:
             conn = self.connect()
             if conn is None:
@@ -108,9 +108,9 @@ class DatabaseConnector:
             cur.execute("""
                 UPDATE inventory
                 SET food_name = ?, food_type = ?, description = ?, is_halal = ?, 
-                    is_vegetarian = ?, expiry = ?, total_qty = ?, curr_qty = ?
+                    is_vegetarian = ?, expiry = ?, total_qty = ?, qty_left_after_booking = ?, qty_left_after_scanning = ?
                 WHERE id = ?
-            """, (food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty, curr_qty, item_id))
+            """, (food_name, food_type, description, is_halal, is_vegetarian, expiry_date, total_qty, qty_left_after_booking, qty_left_after_scanning, item_id))
 
             conn.commit()
             conn.close()
