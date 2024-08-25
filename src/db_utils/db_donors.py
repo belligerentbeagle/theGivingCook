@@ -188,3 +188,81 @@ class DatabaseConnector:
         except Exception as e:
             print(f"An error occurred: {e}")
             return False
+
+    def update_inventory_item_with_qr_code(self, item_id, qr_code):
+        try:
+            conn = self.connect()
+            if conn is None:
+                return False
+            cur = conn.cursor()
+
+            image_blob = image_to_blob(qr_code)
+
+            cur.execute("""
+                UPDATE inventory
+                SET qr_code = ?
+                WHERE id = ?
+            """, (image_blob, item_id))
+
+            conn.commit()
+
+            cur.close()
+            conn.close()
+
+            return True
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            if conn:
+                conn.close()  # Ensure the connection is closed even if an error occurs
+            return False
+
+    def add_item_price(self, item_id, price):
+        try:
+            conn = self.connect()
+            if conn is None:
+                return False
+            cur = conn.cursor()
+
+            cur.execute("""
+                INSERT INTO price_inventory (
+                    food_id,
+                    price
+                )
+                VALUES (?, ?)
+            """, (item_id, price))
+
+            conn.commit()
+
+            cur.close()
+            conn.close()
+
+            return True
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            if conn:
+                conn.close()  # Ensure the connection is closed even if an error occurs
+            return False
+
+def validateIfUserMadeBookingWithInventoryId(self, inventory_id, user_id):
+    try:
+        conn = self.connect()
+        if conn is None:
+            return False
+        cur = conn.cursor()
+
+        # Query to check if the user has made a booking for the specified inventory_id
+        cur.execute("""
+            SELECT id FROM orders
+            WHERE user_id = ? AND item_id = ?
+        """, (user_id, inventory_id))
+
+        booking = cur.fetchone()
+        conn.close()
+
+        # Return True if a booking is found, otherwise False
+        return booking is not None
+    except Exception as e:
+        print(f"Error validating booking: {e}")
+        return False

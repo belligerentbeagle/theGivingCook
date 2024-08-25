@@ -8,6 +8,7 @@ from src.db_utils.db_donors import DatabaseConnector
 from src.donor.donor_donations import view_donations_page
 from src.donor.generate_qr import generate_qr_code
 from src.donor.home import run_home_page
+from src.donor.post_food.food_price_algo import get_item_price
 
 
 def show_success_page(food_name, food_type, description, is_halal, is_vegetarian, quantity, expiry_date, recipient,
@@ -37,13 +38,21 @@ def add_item_logic(food_name, food_type, description, is_halal, is_vegetarian, q
     for_ngo = 1 if recipient == 'NGOs' else 0
     type = 'ngo' if for_ngo else 'individual'
 
+    # upload item to db
     dbconnect = DatabaseConnector()
     inventory_id = dbconnect.add_new_inventory_item_without_qrcode(food_name, food_type, description, is_halal, is_vegetarian, expiry_date, quantity, for_ngo, vendor_id, image)
 
+    # qrcode logic
     link = os.getenv("QR_LINK").format(collection_type=type, inventory_id=inventory_id)
     qr_img = generate_qr_code(link)
     buffered = BytesIO()
     qr_img.save(buffered, format="PNG")
     byte_img = buffered.getvalue()
+
+    # upload qr code to db
+    dbconnect.update_inventory_item_with_qr_code(inventory_id, qr_img)
+
+    # add new price for the item
+    dbconnect.add_item_price(inventory_id, get_item_price())
 
     return byte_img
