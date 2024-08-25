@@ -1,7 +1,5 @@
 import sqlite3
 
-FILE_PATH = "/Users/apple/Desktop/NUS/Job Search Essentials/Y3 Summer/Projects/theGivingCook/src"
-
 
 def createTables(cur):
     # Create Vendor table
@@ -111,6 +109,7 @@ def createTables(cur):
             )
         """)
 
+
 def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
@@ -165,22 +164,22 @@ def insertDummyData(cur):
     """)
 
     # Read actual image files in binary mode
-    with open(f"{FILE_PATH}/data/assets/pasta.jpeg", "rb") as file:
+    with open("../data/assets/pasta.jpeg", "rb") as file:
         pasta = file.read()
 
-    with open(f"{FILE_PATH}/data/assets/ketchup.png", "rb") as file:
+    with open("../data/assets/ketchup.png", "rb") as file:
         tomatosauce = file.read()
 
-    with open(f"{FILE_PATH}/data/assets/milo.jpeg", "rb") as file:
+    with open("../data/assets/milo.jpeg", "rb") as file:
         milo = file.read()
 
-    with open(f"{FILE_PATH}/data/assets/xiumai.png", "rb") as file:
+    with open("../data/assets/xiumai.png", "rb") as file:
         xiumai = file.read()
 
-    with open(f"{FILE_PATH}/data/assets/naanbread.png", "rb") as file:
+    with open("../data/assets/naanbread.png", "rb") as file:
         naan = file.read()
 
-    with open(f"{FILE_PATH}/data/assets/qrcode.png", "rb") as file:
+    with open("../data/assets/qrcode.png", "rb") as file:
         qr = file.read()
 
     # Insert dummy data into inventory table with real image data
@@ -242,7 +241,7 @@ def insertDummyData(cur):
 
 
 def setupDB():
-    con = sqlite3.connect(f"{FILE_PATH}/data/theGivingCook.db")
+    con = sqlite3.connect("../data/theGivingCook.db")
     cur = con.cursor()
 
     # Drop tables if they exist
