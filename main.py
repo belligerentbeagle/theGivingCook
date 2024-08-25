@@ -1,11 +1,49 @@
 import app
 import streamlit as st
 from src.auth.auth import show_login_page, show_signup_donor, show_signup_beneficiaries, get_user_role_and_id
+from itertools import cycle
+from streamlit_carousel import carousel
 
 st.set_page_config(page_title="The Giving Cook", page_icon="🍲")
 
 def show_home_page():
-    st.image("src/data/assets/background.png")
+    test_items = [
+        dict(
+            title="",
+            text="",
+            img="https://i.postimg.cc/SRWrYwbk/background.png",
+            link="https://foodbank.sg/",
+        ),
+        dict(
+            title="",
+            text="",
+            img="https://foodbank.sg/wp-content/uploads/2022/09/IMG_3204.png",
+            link="https://foodbank.sg/juniors-club-2022/",
+        ),
+        dict(
+            title="",
+            text="",
+            img="https://foodbank.sg/wp-content/uploads/2022/03/DSC03237.jpg",
+            link="https://foodbank.sg/bank-card-programme/",
+        ),
+        dict(
+            title="",
+            text="",
+            img="https://res.cloudinary.com/dmajhtvmd/image/upload/w_800,c_scale/avwejrllnrak0eimpu4r.jpg",
+            link="https://foodbank.sg/donate/",
+        ),
+        dict(
+            title="",
+            text="",
+            img="https://i.postimg.cc/KzcFWyQs/photo-2024-08-26-00-46-56.jpg",
+            link="https://foodbank.sg/time-based/",
+        ),
+    ]
+
+    carousel(items=test_items)
+
+# def show_home_page():
+#     st.image("src/data/assets/background.png")
     
 
     
@@ -43,7 +81,7 @@ def main():
             # Heading with animation and bold text
             st.markdown("<h1 class='animated-heading' style='text-align: center; font-weight: bold;'>The Giving Cook 👨‍🍳</h1>", unsafe_allow_html=True)
 
-            # Rainbow divider
+            # Divider
             st.markdown(
             """
             <div style="
