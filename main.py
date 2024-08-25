@@ -56,7 +56,7 @@ def main():
             unsafe_allow_html=True
             )
 
-         st.image("./src/data/assets/background.jpg", use_column_width=True)
+            st.image("./src/data/assets/background.jpg", use_column_width=True)
 
    
         if 'page' not in st.session_state:
