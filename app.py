@@ -20,8 +20,8 @@ def run():
         if scan and inventory_id and collection_type:
             handle_qr_scan(collection_type, inventory_id)
     else:
-        if st.session_state.role == 'donor':
+        if st.session_state.role == 'vendor':
             init_donor_page()
-        elif st.session_state.role == 'receiver':
+        elif st.session_state.role == 'user' or st.session_state.role == 'ngo':
             st.session_state.page = 'Search Food'
             init_recipient_page()

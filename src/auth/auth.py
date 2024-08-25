@@ -1,11 +1,39 @@
 import streamlit as st
 import streamlit_authenticator as stauth
-import yaml
+import sqlite3
 
-# Load configuration
+# Database utility functions
+def query_db(query, params=None):
+    with sqlite3.connect("src/data/theGivingCook.db") as conn:
+        cur = conn.cursor()
+        cur.execute(query, params or ())
+        return cur.fetchall()
+
+# Load configuration from the database
 def load_config():
-    with open('src/auth/config.yaml') as file:
-        config = yaml.safe_load(file)
+    config = {"credentials": {"usernames": {}}, "cookie": {"name": "auth_cookie", "key": "random_key", "expiry_days": 30}}
+    
+    # Query the vendor, ngo, and user tables
+    vendors = query_db("SELECT id, name, hp_number, address, cuisine, description, password FROM vendor")
+    ngos = query_db("SELECT id, name, hp_number, address, number_of_ppl, password FROM ngo")
+    users = query_db("SELECT id, first_name, last_name, hp_number, age, sex, password FROM user")
+    
+    # Load vendor users
+    for vendor in vendors:
+        user_id, name, hp_number, address, cuisine, description, password = vendor
+        config["credentials"]["usernames"][name] = {"name": name, "password": password, "role": "vendor", "user_id": user_id}
+    
+    # Load NGO users
+    for ngo in ngos:
+        user_id, name, hp_number, address, number_of_ppl, password = ngo
+        config["credentials"]["usernames"][name] = {"name": name, "password": password, "role": "ngo", "user_id": user_id}
+    
+    # Load individual users
+    for user in users:
+        user_id, first_name, last_name, hp_number, age, sex, password = user
+        username = f"{first_name} {last_name}"
+        config["credentials"]["usernames"][username] = {"name": username, "password": password, "role": "user", "user_id": user_id}
+    
     return config
 
 def create_authenticator():
@@ -15,124 +43,163 @@ def create_authenticator():
         config['cookie']['name'],
         config['cookie']['key'],
         config['cookie']['expiry_days'],
-        config['pre-authorized']  # This ensures that cookies are managed properly
     )
     return authenticator, config
 
-def get_user_role(username):
-    config = load_config()
-    return config['credentials']['usernames'][username]['role']
-
 def show_login_page():
-    if "authenticator" not in st.session_state:
-        authenticator, config = create_authenticator()
-        st.session_state.authenticator = authenticator
-        st.session_state.authenticator_config = config
-    else:
-        authenticator = st.session_state.authenticator
+    authenticator, config = create_authenticator()
+    st.session_state.authenticator = authenticator
+    st.session_state.authenticator_config = config
 
+    # print(config["credentials"]["usernames"])
     name, authentication_status, username = authenticator.login()
 
     if authentication_status:
-        role = get_user_role(username)
-        st.session_state.username = username  # Store the username in session
-        st.sidebar.success(f"Welcome {name} (Role: {role})")
-        st.session_state.authenticator.logout('Logout', 'sidebar')
-        # st.session_state.authenticated = True  # Set the session state to authenticated
-        st.stop()  # Stop execution to allow the main script to refresh
+        role, user_id = get_user_role_and_id(username)
+        st.session_state.username = username
+        st.session_state.role = role
+        st.session_state.user_id = user_id  # Store the user ID in session
+        st.session_state.authentication_status = True
+        st.stop()
     elif authentication_status is False:
         st.error('Username or password is incorrect')
         if st.button('No Account yet? Create an Account instead'):
             st.session_state.page = 'Create an Account'
             st.stop()
-        # st.page_link("pages/Create_an_Account.py", label="Do not have an Account? Create an Account here")
     else:
         st.warning('Please enter your username and password')
         if st.button('No Account yet? Create an Account instead'):
             st.session_state.page = 'Create an Account'
             st.stop()
-    if st.session_state.page == 'Create an Account':
-        show_signup_beneficiaries()
-        # st.page_link("pages/Create_an_Account.py", label="Do not have an Account? Create an Account here")
 
-def show_signup_donor():
+# Updated get_user_role function to also return the user ID
+def get_user_role_and_id(username):
     if "authenticator" not in st.session_state:
         authenticator, config = create_authenticator()
         st.session_state.authenticator = authenticator
         st.session_state.authenticator_config = config
     else:
         authenticator = st.session_state.authenticator
+        config = st.session_state.authenticator_config
 
+    role = config['credentials']['usernames'][username]['role']
+    user_id = config['credentials']['usernames'][username]['user_id']
+    return role, user_id
+
+# Adjust the registration functions to insert users into the database
+def register_user(params):
+    # Step 1: Insert into the credits table and retrieve the new credit_id, if needed
+    if "credit_value" in params:
+        credit_query = "INSERT INTO credits (credit_value) VALUES (:credit_value)"
+        query_db(credit_query, {"credit_value": params["credit_value"]})
+        
+        # Retrieve the last inserted credit_id
+        params["credit_id"] = query_db("SELECT last_insert_rowid()")[0][0]
+
+    # Hash the password
+    params["password"] = stauth.Hasher([params["password"]]).generate()[0]
+    
+    # Step 2: Determine the role (now the table name) and construct the appropriate query
+    if params["role"] == "vendor":
+        query = """
+        INSERT INTO vendor (name, hp_number, address, cuisine, description, password)
+        VALUES (:name, :hp_number, :address, :cuisine, :description, :password)
+        """
+    
+    elif params["role"] == "ngo":
+        query = """
+        INSERT INTO ngo (name, hp_number, address, number_of_ppl, credit_id, password)
+        VALUES (:name, :hp_number, :address, :number_of_ppl, :credit_id, :password)
+        """
+    
+    elif params["role"] == "user":
+        query = """
+        INSERT INTO user (first_name, last_name, hp_number, age, sex, credit_id, password)
+        VALUES (:first_name, :last_name, :hp_number, :age, :sex, :credit_id, :password)
+        """
+    
+    # Step 3: Execute the query with the params dictionary
+    query_db(query, params)
+    st.info(f"User '{params.get('name', params.get('first_name', ''))}' registered successfully as {params['role']}.")
+
+# Adjust your signup functions to use the database
+def show_signup_donor():
     st.title("Register as a Donor")
-
-    username = st.text_input("Username")
-    uen = st.text_input("UEN")
     name = st.text_input("Organization Name")
+    hp_number = st.text_input("Phone Number")
+    address = st.text_input("Address")
+    cuisine = st.text_input("Cuisine")
     password = st.text_input("Password", type="password")
     password_confirmation = st.text_input("Confirm Password", type="password")
 
+    params_dict = {
+        "name": name,
+        "hp_number": hp_number,
+        "address": address,
+        "cuisine": cuisine,
+        "password": password,
+        "description": "",
+        "role": "vendor"}
+    
     if st.button("Register"):
         if password == password_confirmation:
-            # Here, you would typically hash the password and save the new user
-            hashed_password = authenticator.hash_password(password)
-            config['usernames'][username] = {"name": name, "password": hashed_password, "role": "donor"}
-
-            st.success("User registered successfully")
+            register_user(params_dict)
         else:
             st.error("Passwords do not match")
 
 def show_signup_beneficiaries():
-    if "authenticator" not in st.session_state:
-        authenticator, config = create_authenticator()
-        st.session_state.authenticator = authenticator
-        st.session_state.authenticator_config = config
-    else:
-        authenticator = st.session_state.authenticator
-
     st.title("Register as a Receiver")
+    genre = st.radio("Are you an individual/family or Organization?", ["Individual/Family", "Organization"])
 
-    genre = st.radio(
-    "Are you an individual/family or Organization?",
-    ["Individual/Family", "Organization"],
-    captions=[
-        "Register as Individual Member",
-        "Register as Organization",
-    ],
-)
-    st.divider()
     if genre == "Individual/Family":
         uploaded_file = st.file_uploader("Upload proof of an Organizations' Member")
-        if uploaded_file is not None:
-            bytes_data = uploaded_file.getvalue()
+        firstname = st.text_input("First Name")
+        lastname = st.text_input("Last Name")
+        hp_number = st.text_input("Phone Number")
+        age = st.number_input("age", step=1, format="%d", min_value=1)
+        sex = st.radio("Gender", ["M", "F"])
 
-        username = st.text_input("Username")
-        name = st.text_input("Name")
+        params_dict = {
+            "first_name": firstname,
+            "last_name": lastname,
+            "hp_number": hp_number,
+            "age": age,
+            "sex": sex,
+            "credit_value": 100,
+            "role": "user"}
+        
         password = st.text_input("Password", type="password")
         password_confirmation = st.text_input("Confirm Password", type="password")
 
+        params_dict['password'] = password
         if st.button("Register"):
-            if password == password_confirmation:
-                # Here, you would typically hash the password and save the new user
-                hashed_password = authenticator.hash_password(password)
-                config['usernames'][username] = {"name": name, "password": hashed_password, "role": "receiver"}
-
-                st.success("User registered successfully")
+            if uploaded_file is not None:
+                if password == password_confirmation:
+                    register_user(params_dict)
+                else:
+                    st.error("Passwords do not match")
             else:
-                st.error("Passwords do not match")
-    elif genre == "Organization":
-        username = st.text_input("Username")
-        uen = st.text_input("UEN")
+                st.error("Please Upload Proof")
+    else:
         name = st.text_input("Organization Name")
+        hp_number = st.text_input("Phone Number")
+        address = st.text_input("Address")
+        number_of_ppl = st.number_input("Number of People in Organisation", step=10, format="%d",min_value=1)
+
+        params_dict = {
+            "role": "ngo",
+            "name": name,
+            "hp_number": hp_number,
+            "address": address,
+            "number_of_ppl": number_of_ppl,
+            "credit_value": 100 * number_of_ppl}
+        
         password = st.text_input("Password", type="password")
         password_confirmation = st.text_input("Confirm Password", type="password")
 
+        params_dict['password'] = password
         if st.button("Register"):
             if password == password_confirmation:
-                # Here, you would typically hash the password and save the new user
-                hashed_password = authenticator.hash_password(password)
-                config['usernames'][username] = {"name": name, "password": hashed_password, "role": "receiver"}
-
-                st.success("User registered successfully")
+                register_user(params_dict)
             else:
                 st.error("Passwords do not match")
-
