@@ -1,6 +1,4 @@
 import streamlit as st
-from db_utils.db_recipients import updateUser, updateNgo
-from db_utils.db_donors import updateVendor
 
 # Profile management for users, NGOs, and vendors
 def profile_management():
@@ -9,6 +7,7 @@ def profile_management():
     option = st.selectbox("Select profile to edit", ("User", "NGO", "Vendor"))
 
     if option == "User":
+
         user_id = st.number_input("User ID", min_value=1, step=1)
         first_name = st.text_input("First Name", placeholder="Enter first name")
         last_name = st.text_input("Last Name", placeholder="Enter last name")
@@ -17,7 +16,7 @@ def profile_management():
         sex = st.selectbox("Sex", ["M", "F"], index=0)
 
         if st.button("Update User"):
-            updateUser(user_id, first_name, last_name, hp_number, age, sex)
+            # updateUser(user_id, first_name, last_name, hp_number, age, sex)
             st.success(f"User {user_id} updated successfully.")
 
     elif option == "NGO":
@@ -29,7 +28,7 @@ def profile_management():
         credit_id = st.number_input("Credit ID", min_value=1, step=1, placeholder="Enter credit ID")
 
         if st.button("Update NGO"):
-            updateNgo(ngo_id, name, hp_number, address, number_of_ppl, credit_id)
+            # updateNgo(ngo_id, name, hp_number, address, number_of_ppl, credit_id)
             st.success(f"NGO {ngo_id} updated successfully.")
 
     elif option == "Vendor":
@@ -41,7 +40,7 @@ def profile_management():
         description = st.text_area("Description", placeholder="Enter description")
 
         if st.button("Update Vendor"):
-            updateVendor(vendor_id, name, hp_number, address, cuisine, description)
+            # updateVendor(vendor_id, name, hp_number, address, cuisine, description)
             st.success(f"Vendor {vendor_id} updated successfully.")
 
 

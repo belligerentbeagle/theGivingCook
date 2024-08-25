@@ -1,7 +1,8 @@
 import streamlit as st
-
-from src.donor.donor_entry import init_donor_page
 from src.donor.qr_code_scan_handler import handle_qr_scan
+from src.donor.donor_utils import generate_qr_code
+from src.donor.donor_entry import init_donor_page
+from src.donor.home import run_home_page
 from src.recipients.recipients_entry import init_recipient_page
 
 

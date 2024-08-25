@@ -1,7 +1,7 @@
 import streamlit as st
 from src.recipients import search_food
 from src.recipients.report_form.report_form import file_report
-from src.recipients.scan_qr import scan_qr
+from src.ProfileManagement import profile_management
 
 def init_recipient_page():
     # Get user's name from session state and set default page if not set
@@ -24,10 +24,9 @@ def init_recipient_page():
     if st.session_state.page == 'Search Food':
         search_food.view_postings()
     elif st.session_state.page == 'Manage Profile':
+        profile_management()
         print("manage profile")
     elif st.session_state.page == 'Past Donations':
         print("past donations")
     elif st.session_state.page == 'File Report':
         file_report()
-    elif st.session_state.page == 'Scan QR':
-        scan_qr()
