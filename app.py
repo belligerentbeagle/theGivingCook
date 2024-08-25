@@ -23,4 +23,5 @@ def run():
         if st.session_state.role == 'vendor':
             init_donor_page()
         elif st.session_state.role == 'user' or st.session_state.role == 'ngo':
+            st.session_state.page = 'Search Food'
             init_recipient_page()
