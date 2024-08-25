@@ -1,16 +1,12 @@
 import streamlit as st
 import pandas as pd
-from PIL import Image
-import io
-from src.db_utils.db_donors import DatabaseConnector
+from src.db_utils.db_donors import get_donation_by_id, update_inventory_item
 
 def edit_donation_page(item_id):
-    # TODO: Check user is logged in and have vendor role
+ if st.session_state.authentication_status == True and st.session_state.role == 'vendor':
     
-    db_connector = DatabaseConnector()
-
     try:
-        donation = db_connector.get_donation_by_id(item_id)
+        donation = get_donation_by_id(item_id)
         if donation:
             row = donation
 
@@ -31,7 +27,7 @@ def edit_donation_page(item_id):
                 is_halal_value = 1 if new_is_halal == "True" else 0
                 is_vegetarian_value = 1 if new_is_vegetarian == "True" else 0
 
-                success = db_connector.update_inventory_item(
+                success = update_inventory_item(
                     item_id, new_food_name, new_food_type, new_description, 
                     is_halal_value, is_vegetarian_value, new_expiry_date, 
                     row[8], row[9], row[10]
@@ -45,3 +41,5 @@ def edit_donation_page(item_id):
             st.write("Donation not found or failed to retrieve donation.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
+ else:
+    st.error("User is not logged in or is not a vendor.")

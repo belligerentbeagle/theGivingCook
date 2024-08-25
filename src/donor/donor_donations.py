@@ -1,17 +1,17 @@
 import streamlit as st
 import pandas as pd
-from src.db_utils.db_donors import DatabaseConnector
+from src.db_utils.db_donors import get_vendor_donations
 
 def view_donations_page():
-    # TODO: Check user is logged in and have vendor role
+  if st.session_state.authentication_status == True and st.session_state.role == 'vendor':
     st.session_state.post_food_form_submitted = False
-    db_connector = DatabaseConnector()
 
     st.write("Here is a list of the food items you have donated so far.")
 
     try:
-        # TODO: retrieve vendor_id
-        donations = db_connector.get_vendor_donations(4)
+        # TODO: retrieve vendor_id, can take vendor _id from session state
+        vendor_id = st.session_state.user_id
+        donations = get_vendor_donations(vendor_id)
         if donations:
             donations_df = pd.DataFrame(donations, columns=[
                 "id", "Food Name", "Food Type", "Description", "Is Halal", 
@@ -46,5 +46,8 @@ def view_donations_page():
 
         else:
             st.write("No donations found or failed to retrieve donations.")
+  
     except Exception as e:
         st.error(f"An error occurred: {e}")
+  else:
+    st.error("User is not logged in or is not a vendor.")
