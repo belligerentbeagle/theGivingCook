@@ -136,4 +136,3 @@ def show_signup_beneficiaries():
             else:
                 st.error("Passwords do not match")
 
-    
