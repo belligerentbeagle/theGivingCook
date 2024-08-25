@@ -1,13 +1,14 @@
 import app
 import streamlit as st
-from src.auth.auth import show_login_page, show_signup_donor, show_signup_beneficiaries, get_user_role
+from src.auth.auth import show_login_page, show_signup_donor, show_signup_beneficiaries, get_user_role_and_id
 
 st.set_page_config(page_title="The Giving Cook", page_icon="🍲")
 
 def main():
     if st.session_state.get('authentication_status', False):
-        role = get_user_role(st.session_state.username)
+        role, user_id = get_user_role_and_id(st.session_state.username)
         st.session_state.role = role
+        st.session_state.user_id = user_id
         st.session_state.authenticator.logout('Logout', 'sidebar')  # Ensure the logout button is visible
         app.run()
     else:

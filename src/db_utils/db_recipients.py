@@ -19,6 +19,22 @@ def createNewNgoUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
     except Exception as e:
         print(e)
         return False
+    
+def createNewUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        return 0
+        cur.execute("""
+            INSERT INTO ngo(name, hp_number, address, number_of_ppl, credit_id)
+            VALUES(?, ?, ?, ?, ?)
+        """, (ngo_name, hp_number, address, number_of_ppl, credit_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 
 def retrieveAllVendors():

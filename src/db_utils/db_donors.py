@@ -54,4 +54,3 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error updating inventory quantity: {e}")
             return False
-    

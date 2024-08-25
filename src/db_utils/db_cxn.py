@@ -117,7 +117,7 @@ def insertDummyData(cur):
     # Insert dummy data into vendor table
     cur.execute("""
         INSERT INTO vendor (name, hp_number, address, cuisine, description, password) VALUES
-        ('McDonalds', '+65 91234567', '5 Tampines Street 32, #01-01 Tampines Mart, Singapore 529284', 'Italian', 'A cozy place with homemade pasta', 'password'),
+        ('McDonalds', '+65 91234567', '5 Tampines Street 32, #01-01 Tampines Mart, Singapore 529284', 'Italian', 'A cozy place with homemade pasta', '$2b$12$VuY1VI3xI6lyGXWy/ay61ujmVWR2zgqquOmp45wWFY9afp7EhXbxq'),
         ('KFC', '+65 98765432', '4 Tampines Central 5, #01-47 Tampines Mall, Singapore 529510', 'American', 'Gourmet burgers and fries', 'password'),
         ('Four Fingers', '+65 82345678', '277 Orchard Road, Gateway, #01-04/05 Orchard, 238858', 'Japanese', 'Fresh sushi and sashimi', 'password'),
         ('Subway', '+65 91258765', '5 Tampines Street 32, #01-21 Tampines Mart, Singapore 529284', 'Chinese', 'Traditional dim sum and tea', 'password'),
@@ -132,7 +132,7 @@ def insertDummyData(cur):
     # Insert dummy data into user table with credit_id
     cur.execute("""
         INSERT INTO user (first_name, last_name, hp_number, age, sex, credit_id, password) VALUES
-            ('John', 'Doe', '+65 91234567', 30, 'M', 4, 'password'),
+            ('John', 'Doe', '+65 91234567', 30, 'M', 4, '$2b$12$VuY1VI3xI6lyGXWy/ay61ujmVWR2zgqquOmp45wWFY9afp7EhXbxq'),
             ('Jane', 'Smith', '+65 92345678', 25, 'F', 5, 'password'),
             ('Alice', 'Tan', '+65 93456789', 28, 'F', 6, 'password')
     """)
@@ -140,7 +140,7 @@ def insertDummyData(cur):
     # Insert dummy data into ngo table with credit_id
     cur.execute("""
         INSERT INTO ngo (name, hp_number, address, number_of_ppl, credit_id, password) VALUES
-            ('Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1, 'password'),
+            ('Feed the Hungry', '+65 92345678', '789 Oak St', 100, 1, '$2b$12$VuY1VI3xI6lyGXWy/ay61ujmVWR2zgqquOmp45wWFY9afp7EhXbxq'),
             ('Helping Hands', '+65 93456789', '321 Pine St', 50, 2, 'password'),
             ('Caring Hearts', '+65 94567890', '567 Cedar Ave', 200, 3, 'password')
     """)
