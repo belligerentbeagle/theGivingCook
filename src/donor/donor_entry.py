@@ -8,6 +8,7 @@ def init_donor_page():
     if st.session_state.page == 'Log In':
         st.session_state.page = 'Home'
     name = st.session_state['name']
+    st.sidebar.image("src/data/assets/logo.png")
     st.sidebar.title(f"Welcome Back, {name}!")
 
     if st.sidebar.button("Home"):

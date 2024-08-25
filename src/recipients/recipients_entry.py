@@ -11,7 +11,9 @@ def init_recipient_page():
     if st.session_state.page == 'Log In':
         st.session_state.page = 'Search Food'
 
+    st.sidebar.image("src/data/assets/logo.png")
     st.sidebar.title(f"Welcome Back, {name}!")
+    # st.sidebar.image("src/data/assets/logo.png")
 
     if st.sidebar.button("Search Food"):
         st.session_state.page = 'Search Food'
