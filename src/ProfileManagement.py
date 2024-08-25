@@ -1,6 +1,4 @@
 import streamlit as st
-from db_utils.db_recipients import updateUser, updateNgo
-from db_utils.db_donors import updateVendor
 
 # Profile management for users, NGOs, and vendors
 def profile_management():
