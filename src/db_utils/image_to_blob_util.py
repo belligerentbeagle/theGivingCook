@@ -9,8 +9,15 @@ def image_to_blob(image):
     :return: Binary data (BLOB) of the image.
     """
     try:
-        # Read the image file object as binary
-        blob_data = image.read()
+        if hasattr(image, 'read'):  # Check if it's a file-like object
+            # Read the image file object as binary
+            blob_data = image.read()
+        else:
+            # Convert PIL Image to binary data
+            buffered = io.BytesIO()
+            image.save(buffered, format="PNG")  # Save as PNG or appropriate format
+            blob_data = buffered.getvalue()
+
         return blob_data
     except Exception as e:
         print(f"An error occurred while converting image to blob: {e}")
