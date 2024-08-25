@@ -10,7 +10,6 @@ def convert_address_to_latlong(address):
     load_dotenv()
     mapbox_token = os.getenv('MAPBOX_TOKEN')
     encoded_address = urllib.parse.quote(address)
-    """Forward geocode an address to latitude and longitude."""
     url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{encoded_address}.json?access_token={mapbox_token}"
 
     response = requests.get(url)

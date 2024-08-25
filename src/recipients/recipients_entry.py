@@ -6,9 +6,10 @@ def init_recipient_page():
     name = st.session_state.get('name', 'Guest')
     if 'page' not in st.session_state:
         st.session_state.page = 'Search Food'
-        search_food.view_postings()
+    
 
     st.sidebar.title(f"Welcome Back, {name}!")
+    search_food.view_postings()
 
     if st.sidebar.button("Search Food"):
         st.session_state.page = 'Search Food'

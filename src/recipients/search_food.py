@@ -8,8 +8,6 @@ import pandas as pd
 from geopy.distance import geodesic
 from streamlit_dynamic_filters import DynamicFilters
 
-# def recipients_home():
-#     view_postings()
 
 def view_postings():
     user_location = retrieve_current_location()
@@ -40,6 +38,7 @@ def show_map_elems():
                 filtered_data, filters=['food_type'])
             dynamic_filters.display_filters()
 
+    st.write("Included table for visualization for now (rm ltr)")
     st.dataframe(filtered_data)
 
     return distance_filter, filtered_data
@@ -69,7 +68,7 @@ def show_filters(postings, type):
 
 
 def show_map_with_location(postings, user_location, distance_filter):
-    st.write(f"User coordinates: {user_location}")
+    # st.write(f"User coordinates: {user_location}")
     vendors = filter_by_distance(postings, user_location, distance_filter)
     # max_distance = max([geodesic(user_location, (res['latitude'], # shouldnt include this so that we can still see postings outside of indicated radius
     #                     res['longitude'])).km for res in vendors], default=0)
@@ -195,4 +194,5 @@ def retrieve_inventory(user_location=None, max_distance=None):
                 # 'photo': photo
             })
 
+    # print(postings)
     return pd.DataFrame(postings)

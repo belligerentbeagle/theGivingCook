@@ -2,7 +2,8 @@
 
 import sqlite3
 
-database_loc = "src/data/theGivingCook.db"
+FILE_PATH = "/Users/apple/Desktop/NUS/Job Search Essentials/Y3 Summer/Projects/theGivingCook/src"
+database_loc = f"{FILE_PATH}/data/theGivingCook.db"
 
 
 def createNewNgoUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
@@ -56,3 +57,19 @@ def retrieveAvailableInventory(date):
     except Exception as e:
         print("Failed to retrieve inventory and vendor data:", e)
         return []
+
+
+def createNewVendorUser(vendor_name, hp_number, address, cuisine, description):
+    try:
+        conn = sqlite3.connect(database_loc)
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO vendor(name, hp_number, address, cuisine, description)
+            VALUES(?, ?, ?, ?, ?)
+        """, (vendor_name, hp_number, address, cuisine, description))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(e)
+        return False
