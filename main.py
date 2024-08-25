@@ -6,7 +6,7 @@ from src.donate.donate import show_donate_page
 st.set_page_config(page_title="The Giving Cook", page_icon="🍲")
 
 def show_home_page():
-    st.image("src/data/assets/background.png")
+    pass
     
 
     
@@ -55,8 +55,12 @@ def main():
             """, 
             unsafe_allow_html=True
             )
+            st.image("src/data/assets/background.png")
 
-            st.image("./src/data/assets/background.jpg", use_column_width=True)
+            st.markdown("<h1 class='animated-heading' style='text-align: center; font-weight: bold;'> Your superapp for fighting food waste</h1>", unsafe_allow_html=True)
+
+
+           
 
    
         if 'page' not in st.session_state:
