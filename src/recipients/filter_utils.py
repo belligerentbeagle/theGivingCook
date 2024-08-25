@@ -21,7 +21,9 @@ def show_filters(postings, type):
     if selected_preferences:
         filtered_data = postings
         for preference in selected_preferences:
-            filtered_data = filtered_data[filtered_data[preference] == 1]
+            if preference in filtered_data.columns:
+                filtered_data = filtered_data[filtered_data[preference] == 1]
+
     else:
         # If no preference is selected, show all data
         filtered_data = postings

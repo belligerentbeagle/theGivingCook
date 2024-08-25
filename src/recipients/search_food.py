@@ -281,20 +281,20 @@ def retrieve_inventory(user_location=None, max_distance=None):
                 'food_name': food_name,
                 'food_type': food_type,
                 'description': description,
-                'is_halal': is_halal,
-                'is_vegetarian': is_veg,
+                'is_halal': is_halal if is_halal is not None else False,  # Ensure a default value
+                'is_vegetarian': is_veg if is_veg is not None else False,  # Ensure a default value
                 'expiry_date': expiry,
                 'date_of_entry': date_of_entry,
                 'quantity': qty_left_after_booking,
-                'for_ngo': for_ngo,
+                'for_ngo': for_ngo if for_ngo is not None else False,  # Ensure a default value
                 'address': address,
                 'latitude': lat,
                 'longitude': lon,
                 'vendor_id': vendor_id,
                 'photo': photo,
                 'price': price
-
             })
+
 
     # print(postings)
     return pd.DataFrame(postings)
