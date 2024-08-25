@@ -3,6 +3,7 @@ import streamlit as st
 from src.auth.auth import show_login_page, show_signup_donor, show_signup_beneficiaries, get_user_role_and_id
 from itertools import cycle
 from streamlit_carousel import carousel
+from src.donate.donate import show_donate_page
 
 st.set_page_config(page_title="The Giving Cook", page_icon="🍲")
 
@@ -92,10 +93,18 @@ def main():
             """, 
             unsafe_allow_html=True
             )
+            st.image("src/data/assets/background.png")
 
+            st.markdown("<h1 class='animated-heading' style='text-align: center; font-weight: bold;'> Your superapp for fighting food waste</h1>", unsafe_allow_html=True)
+
+
+           
 
    
         if 'page' not in st.session_state:
+            st.session_state.page = 'Home'
+        
+        if st.sidebar.button("Home"):
             st.session_state.page = 'Home'
         if st.sidebar.button("Log In"):
             st.session_state.page = 'Log In'
@@ -103,6 +112,8 @@ def main():
             st.session_state.page = 'Create an Account'
         if st.sidebar.button("Be a Registered Donor"):
             st.session_state.page = 'Register as Donor'
+        if st.sidebar.button("Donate"):
+            st.session_state.page = 'Donate'
 
         if st.session_state.page == 'Home':
             show_home_page()
@@ -112,7 +123,8 @@ def main():
             show_signup_beneficiaries()
         elif st.session_state.page == 'Register as Donor':
             show_signup_donor()
-
+        elif st.session_state.page == 'Donate':
+            show_donate_page()
 
 if __name__ == "__main__":
     main()
