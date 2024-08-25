@@ -13,7 +13,7 @@ def show_success_page(food_name, food_type, description, is_halal, is_vegetarian
     st.write(f"**Vegetarian**: {'Yes' if is_vegetarian else 'No'}")
     st.write(f"**Quantity Available**: {quantity}")
     st.write(f"**Expiry Date**: {expiry_date.strftime('%Y-%m-%d')}")
-
+    
     # Display the uploaded image
     if image is not None:
         image_display = Image.open(image)

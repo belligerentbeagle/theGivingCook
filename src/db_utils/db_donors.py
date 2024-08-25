@@ -149,3 +149,25 @@ class DatabaseConnector:
         except Exception as e:
             print(f"An error occurred: {e}")
             return False
+
+def validateIfUserMadeBookingWithInventoryId(self, inventory_id, user_id):
+    try:
+        conn = self.connect()
+        if conn is None:
+            return False
+        cur = conn.cursor()
+
+        # Query to check if the user has made a booking for the specified inventory_id
+        cur.execute("""
+            SELECT id FROM orders
+            WHERE user_id = ? AND item_id = ?
+        """, (user_id, inventory_id))
+
+        booking = cur.fetchone()
+        conn.close()
+
+        # Return True if a booking is found, otherwise False
+        return booking is not None
+    except Exception as e:
+        print(f"Error validating booking: {e}")
+        return False

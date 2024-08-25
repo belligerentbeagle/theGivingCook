@@ -6,6 +6,7 @@ from src.db_utils.db_donors import DatabaseConnector
 
 def edit_donation_page(item_id):
     # TODO: Check user is logged in and have vendor role
+ if st.session_state.authentication_status == True and st.session_state.role == 'vendor':
     
     db_connector = DatabaseConnector()
 
@@ -45,3 +46,5 @@ def edit_donation_page(item_id):
             st.write("Donation not found or failed to retrieve donation.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
+ else:
+    st.error("User is not logged in or is not a vendor.")
