@@ -42,11 +42,7 @@ def show_home_page():
     ]
 
     carousel(items=test_items)
-
-# def show_home_page():
-#     st.image("src/data/assets/background.png")
     
-
     
 def main():
     if st.session_state.get('authentication_status', False):
@@ -93,13 +89,6 @@ def main():
             """, 
             unsafe_allow_html=True
             )
-            st.image("src/data/assets/background.png")
-
-            st.markdown("<h1 class='animated-heading' style='text-align: center; font-weight: bold;'> Your superapp for fighting food waste</h1>", unsafe_allow_html=True)
-
-
-           
-
    
         if 'page' not in st.session_state:
             st.session_state.page = 'Home'
