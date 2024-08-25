@@ -2,12 +2,10 @@ import os
 from io import BytesIO
 
 import streamlit as st
-from PIL import Image
 
-from src.db_utils.db_donors import add_new_inventory_item_without_qrcode, update_inventory_item_with_qr_code, add_item_price
-from src.donor.donor_donations import view_donations_page
+from src.db_utils.db_donors import add_new_inventory_item_without_qrcode, update_inventory_item_with_qr_code, \
+    add_item_price
 from src.donor.generate_qr import generate_qr_code
-from src.donor.home import run_home_page
 from src.donor.post_food.food_price_algo import get_item_price
 
 
@@ -29,6 +27,8 @@ def show_success_page(food_name, food_type, description, is_halal, is_vegetarian
     st.write("**Please get the recipient to scan this QR Code to receive the item:**")
     if qr_img is not None:
         st.image(qr_img, caption="Scan this QR code to collect the food item", width=500)
+
+    st.session_state.post_food_form_submitted = False
 
 
 # updates db by calling corresponding db functions
