@@ -7,12 +7,12 @@ from .recipients_utils import *
 
 
 def filter_by_beneficiary_type(beneficiaryType, df):
-    if beneficiaryType == "NGOs":
-        filtered_df = df[df['for_ngo'] == 1]  
-    elif beneficiaryType == "Individuals":
-        filtered_df = df[df['for_ngo'] == 0]  
-    else:
-        filtered_df = df  
+    filtered_df = df  
+    if 'for_ngo' in df:
+        if beneficiaryType == "NGOs":
+            filtered_df = df[df['for_ngo'] == 1]  
+        elif beneficiaryType == "Individuals":
+            filtered_df = df[df['for_ngo'] == 0]  
 
     return filtered_df
 
