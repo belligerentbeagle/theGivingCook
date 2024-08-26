@@ -3,10 +3,11 @@ import qrcode
 from dotenv import load_dotenv
 from io import BytesIO
 
-load_dotenv()
+env_path = os.path.join(os.path.dirname(__file__), '../../.env')
+load_dotenv(env_path)
 
 def generate_qr_code(link):
-    host = os.getenv("HOST", "http://localhost:8501/")
+    host = os.getenv("HOST", "https://definite-gradually-giraffe.ngrok-free.app")
     full_link = f"{host}/{link}"
     qr = qrcode.QRCode(
         version=1,

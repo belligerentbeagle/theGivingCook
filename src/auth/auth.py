@@ -1,12 +1,13 @@
 import streamlit as st
 import sqlite3
 import streamlit_authenticator as stauth
+import time
 
 from src.db_utils.db_auth import query_db, register_user
 
 # Load configuration from the database
 def load_config():
-    config = {"credentials": {"usernames": {}}, "cookie": {"name": "auth_cookie", "key": "random_key", "expiry_days": 30}}
+    config = {"credentials": {"usernames": {}}, "cookie": {"name": "auth_cookie", "key": str(time.time()), "expiry_days": 0}}
     
     # Query the vendor, ngo, and user tables
     vendors = query_db("SELECT id, username, name, hp_number, address, cuisine, description, password FROM vendor")
@@ -42,6 +43,8 @@ def create_authenticator():
 
 def show_login_page():
     authenticator, config = create_authenticator()
+    st.session_state.authenticator = authenticator
+    st.session_state.authenticator_config = config
     
     # Check if this is the first load (before any login attempt)
     if "authentication_status" not in st.session_state:
@@ -50,7 +53,7 @@ def show_login_page():
     # Attempt login only if user has tried to log in
     if st.session_state.authentication_status is None:
         st.session_state.username = None
-        name, authentication_status, username = authenticator.login()
+        name, authentication_status, username = authenticator.login(key="1234")
         st.session_state.authentication_status = authentication_status
 
         if authentication_status:
@@ -58,8 +61,6 @@ def show_login_page():
             st.session_state.username = username
             st.session_state.role = role
             st.session_state.user_id = user_id  # Store the user ID in session
-            st.sidebar.success(f"Welcome {name} (Role: {role})")
-            st.session_state.authenticator.logout('Logout', 'sidebar')
             st.session_state.authentication_status = True
             st.stop()
         elif authentication_status is False:
