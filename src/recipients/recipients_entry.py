@@ -1,7 +1,7 @@
 import streamlit as st
 from src.recipients import search_food
 from src.recipients.report_form.report_form import file_report
-from src.ProfileManagement import profile_management
+from src.data.ProfileManagement import profile_management
 from src.recipients.scan_qr import scan_qr
 from .report_form import report_form, report_form_success
 

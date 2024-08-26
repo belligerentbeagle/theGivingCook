@@ -2,7 +2,7 @@ import streamlit as st
 from src.donor.donor_home import run_home_page
 from src.donor.post_food.post_food_main import post_food
 from src.donor.view_donations.donor_donations import view_donations_page
-
+from src.data.ProfileManagement import profile_management
 
 def init_donor_page():
     if st.session_state.page == 'Log In':
@@ -17,9 +17,14 @@ def init_donor_page():
         st.session_state.page = 'Post Food'
     if st.sidebar.button("View Donations", use_container_width=True):
         st.session_state.page = 'View Donations'
+    if st.sidebar.button("Manage Profile", use_container_width=True):
+        st.session_state.page = 'Manage Profile'
+    
     if st.session_state.page == 'Home':
         run_home_page()
     elif st.session_state.page == 'Post Food':
         post_food()
     elif st.session_state.page == "View Donations":
         view_donations_page()
+    elif st.session_state.page == 'Manage Profile':
+        profile_management()
