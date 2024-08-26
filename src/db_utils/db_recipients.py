@@ -2,9 +2,8 @@
 
 import sqlite3
 
-FILE_PATH = "/Users/apple/Desktop/NUS/Job Search Essentials/Y3 Summer/Projects/theGivingCook/src"
 
-database_loc = f"{FILE_PATH}/data/theGivingCook.db"
+database_loc = f"../data/theGivingCook.db"
 
 
 def createNewNgoUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
