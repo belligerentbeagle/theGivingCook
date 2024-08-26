@@ -2,7 +2,9 @@
 
 import sqlite3
 
-database_loc = f"../data/theGivingCook.db"
+FILE_PATH = "/Users/apple/Desktop/NUS/Job Search Essentials/Y3 Summer/Projects/theGivingCook/src"
+
+database_loc = f"{FILE_PATH}/data/theGivingCook.db"
 
 
 def createNewNgoUser(ngo_name, hp_number, address, number_of_ppl, credit_id):
@@ -69,7 +71,6 @@ def retrieveAvailableInventory(date):
         """, (date,))
         rows = cur.fetchall()
         conn.close()
-        print("retrieved data")
         return rows
     except Exception as e:
         print("Failed to retrieve inventory and vendor data:", e)
@@ -135,8 +136,8 @@ def updateInventoryAfterBooking(id, qtyLeft):
             SET qty_left_after_booking = ?
             WHERE id = ?
         """, (qtyLeft, id))
-        conn.commit() 
-        conn.close() 
+        conn.commit()
+        conn.close()
         return True
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -180,19 +181,15 @@ def retrieveUserCredits(user_id):
     conn = sqlite3.connect(database_loc)
     cur = conn.cursor()
     query = """
-    SELECT 
-        credits.credit_value
-    FROM 
-        user
-    JOIN 
-        credits ON user.credit_id = credits.id
-    WHERE 
-        user.id = ?;
+    SELECT credits.credit_value
+    FROM user
+    JOIN credits ON user.credit_id = credits.id
+    WHERE user.id = ?;
     """
     cur.execute(query, (user_id,))
-    result = cur.fetchone()  
+    result = cur.fetchone()
     conn.close()
-    
+
     if result:
         print(f"Credit Value: {result[0]}")
         return result[0]

@@ -3,7 +3,6 @@ from src.recipients import search_food
 from src.recipients.report_form.report_form import file_report
 from src.ProfileManagement import profile_management
 from src.recipients.scan_qr import scan_qr
-from .report_form import report_form, report_form_success
 
 
 
@@ -31,9 +30,7 @@ def init_recipient_page():
         search_food.view_postings()
     elif st.session_state.page == 'Manage Profile':
         profile_management()
-        print("manage profile")
     elif st.session_state.page == 'Scan QR':
         scan_qr()
     elif st.session_state.page == 'File Report':
         file_report()
-        report_form.file_report()

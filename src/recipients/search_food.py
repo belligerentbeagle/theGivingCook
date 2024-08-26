@@ -3,9 +3,9 @@ from .map_utils import *
 from .filter_utils import *
 from src.db_utils.db_recipients import retrieveAvailableInventory, updateUserCredits, updateInventoryAfterBooking, createNewOrder, retrieveUserCredits
 
-# import folium
-# from folium.plugins import MarkerCluster
-# from streamlit_folium import st_folium
+import folium
+from folium.plugins import MarkerCluster
+from streamlit_folium import st_folium
 
 import streamlit as st
 import pydeck as pdk
@@ -15,7 +15,17 @@ from streamlit_dynamic_filters import DynamicFilters
 
 
 def view_postings():
-    user_location = retrieve_current_location()
+    col1, col2, col3 = st.columns([4, 1, 1])
+    user_location = [None, None]
+
+    st.header('Explore food vendors')
+    with st.container():
+        col1, col2 = st.columns([1, 5])
+        with col1:
+            st.write("Locate Me! -->")
+        with col2:
+            user_location = retrieve_current_location()
+
     distance_filter, filtered_data = show_map_elems()
 
     if 'user_latlong' not in st.session_state:
@@ -30,39 +40,7 @@ def view_postings():
     show_posting(filtered_data)
 
 
-def setup_custom_buttons():
-    st.markdown("""
-    <style>
-    @media (max-width: 768px) {
-        .block-container {
-            padding: 1rem !important;
-        }
-        .stButton>button {
-            width: 100%;
-            margin: 0;
-        }
-        .stMarkdown {
-            padding: 0 !important;
-        }
-    }
-    .button-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .count-display {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-
 def show_posting(filtered_data):
-    setup_custom_buttons()  
-
     cols = st.columns(3)
     col_index = 0
 
@@ -89,22 +67,26 @@ def show_posting(filtered_data):
 
                     qtySelected = 0
 
-                    qtySelected = st.number_input("", min_value=1, step=1, placeholder="Enter quantity", key=counter_key)
+                    qtySelected = st.number_input(
+                        " ", min_value=0, step=1, placeholder="Enter quantity", key=counter_key)
                     print(qtySelected)
 
                     if st.button('Book Now ✅', key=book_key):
                         if qtySelected > 0:
-                            # user_id = st.session_state.user_id
-                            user_id = 1
+                            user_id = st.session_state.user_id
                             qtyBooked = qtySelected
-                            creditsSpent = qtyBooked * convertPriceToCredits(data['price'])
+                            creditsSpent = qtyBooked * \
+                                convertPriceToCredits(data['price'])
                             booking_successful(data, qtyBooked)
 
                             # Update database
                             qtyLeft = data['quantity'] - qtyBooked
-                            updateInventoryAfterBooking(data['inventory_id'], qtyLeft)
-                            createNewOrder(data['inventory_id'], user_id, qtyBooked, creditsSpent, False)
-                            finalCredits = retrieveUserCredits(user_id) - creditsSpent
+                            updateInventoryAfterBooking(
+                                data['inventory_id'], qtyLeft)
+                            createNewOrder(
+                                data['inventory_id'], user_id, qtyBooked, creditsSpent, False)
+                            finalCredits = retrieveUserCredits(
+                                user_id) - creditsSpent
                             updateUserCredits(user_id, finalCredits)
 
                             # Reset after booking
@@ -130,7 +112,6 @@ def booking_successful(item, qty):
 
 
 def show_map_elems():
-    st.header('Explore food vendors')
     distance_filter = st.slider('Select maximum distance (km)', 0, 50, 10)
 
     postings = retrieve_inventory()
@@ -145,7 +126,7 @@ def show_map_elems():
                 filtered_data, filters=['food_type'])
             dynamic_filters.display_filters()
             filtered_data = dynamic_filters.filter_df()
-    
+
     with col3:
         beneficiaryType = st.selectbox(
             "Select Beneficiary Type",
@@ -162,124 +143,172 @@ def show_map_elems():
     return distance_filter, filtered_data
 
 
-def show_map_with_location(postings, user_location, distance_filter):
-    # st.write(f"User coordinates: {user_location}")
-    vendors = filter_by_distance(postings, user_location, distance_filter)
-    # remove photo from df for scatterplot processing
-    if 'photo' in vendors:
-        vendors_no_photo = vendors.drop(columns=['photo'])
-    else:
-        vendors_no_photo = vendors_no_photo = pd.DataFrame()
-        st.write("There are no current available food collection vendors.")
+# def show_map_with_location(postings, user_location, distance_filter):
+#     print("USER LOCATION", user_location)
 
-    # max_distance = max([geodesic(user_location, (res['latitude'], # shouldnt include this so that we can still see postings outside of indicated radius
-    #                     res['longitude'])).km for res in vendors], default=0)
-    zoom_level = calculate_zoom_level(distance_filter)
-    view_state = pdk.ViewState(
-        latitude=user_location[0], longitude=user_location[1], zoom=zoom_level)
+#     user_location_data = [{
+#         "name": 'user',
+#         "url": 'https://p7.hiclipart.com/preview/457/630/559/location-computer-icons-symbol-clip-art-location-thumbnail.jpg',
+#         "latitude": user_location[0],
+#         "longitude": user_location[1]
+#     }
+#     ]
+#     user_df = pd.DataFrame(user_location_data)
 
-    # User's location layer
-    user_location_layer = pdk.Layer(
-        'ScatterplotLayer',
-        data=[{"latitude": user_location[0], "longitude": user_location[1]}],
-        get_position='[longitude, latitude]',
-        get_color='[255, 100, 100, 180]',
-        get_radius=150,
-        pickable=True,
-        tooltip="User Location"
-    )
+#     # st.write(f"User coordinates: {user_location}")
+#     vendors = filter_by_distance(postings, user_location, distance_filter)
+#     # remove photo from df for scatterplot processing
 
-    layers = [user_location_layer]
+#     if 'photo' in vendors.columns:
+#         vendors_no_photo = vendors.drop(columns=['photo'])
+#     else:
+#         vendors_no_photo = vendors
 
-    # Vendor locations layer
-    if not vendors_no_photo.empty:
-        vendor_layer = pdk.Layer(
-            'ScatterplotLayer',
-            data=vendors_no_photo,
-            get_position='[longitude, latitude]',
-            get_color='[200, 30, 0, 160]',
-            get_radius=200,
-        )
-        layers.append(vendor_layer)
-    else:
-        st.write("There are no available items now.")
+#     # max_distance = max([geodesic(user_location, (res['latitude'], # shouldnt include this so that we can still see postings outside of indicated radius
+#     #                     res['longitude'])).km for res in vendors], default=0)
+#     zoom_level = calculate_zoom_level(distance_filter)
+#     view_state = pdk.ViewState(
+#         latitude=user_location[0], longitude=user_location[1], zoom=zoom_level)
 
-    # Circle layer
-    circle = create_geojson_circle(user_location, distance_filter)
-    circle_layer = pdk.Layer(
-        "GeoJsonLayer",
-        data=circle,
-        opacity=0.2,
-        filled=True,
-        get_fill_color=[255, 180, 0, 140]
-    )
-    layers.append(circle_layer)
-
-    st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/streets-v12',
-                             initial_view_state=view_state,
-                             layers=layers))
-    return vendors
+#     # User's location layer
+#     print(user_df)
+#     print(postings)
 
 
-def show_default_map(postings):
-    singapore = [1.3521, 103.8198]
-    # remove photo from df for scatterplot processing
-    if not postings.empty and 'photo' in postings:
-        vendors_no_photo = postings.drop(columns=['photo'])
-    else:
-        vendors_no_photo = pd.DataFrame()
-        st.write("There are no current available food collection vendors.")
+#     layers = []
+#     user_layer = pdk.Layer(
+#         'ScatterplotLayer',
+#         data=user_df,
+#         get_position='[longitude, latitude]',
+#         get_color='[0, 0, 0, 200]',
+#         get_radius=100,
+#         pickable=True,
+#         auto_highlight=True,
+#         tooltip={"text": "{latitude}, {longitude}"}
+#     )
 
-    view_state = pdk.ViewState(
-        latitude=singapore[0], longitude=singapore[1], zoom=10.5)
+#     layers.append(user_layer)
 
-    layer = []
-    # Vendor locations layer
-    if not vendors_no_photo.empty:
-        vendor_layer = pdk.Layer(
-            'ScatterplotLayer',
-            data=vendors_no_photo,
-            get_position='[longitude, latitude]',
-            get_color='[200, 30, 0, 160]',
-            get_radius=200,
-        )
-        layer.append(vendor_layer)
-        
+#     # Vendor locations layer
+#     if not vendors_no_photo.empty:
+#         vendor_layer = pdk.Layer(
+#             'ScatterplotLayer',
+#             data=vendors_no_photo,
+#             get_position='[longitude, latitude]',
+#             get_color='[200, 30, 0, 160]',
+#             get_radius=100,
+#         )
+#         layers.append(vendor_layer)
+#     else:
+#         st.write("There are no available items now.")
 
-    st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/streets-v12',
-                             initial_view_state=view_state,
-                             layers=layer))
+#     # Circle layer
+#     circle = create_geojson_circle(user_location, distance_filter)
+#     circle_layer = pdk.Layer(
+#         "GeoJsonLayer",
+#         data=circle,
+#         opacity=0.1,
+#         filled=True,
+#         get_fill_color=[255, 180, 0, 140]
+#     )
+#     layers.append(circle_layer)
+
+#     st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/streets-v12',
+#                              initial_view_state=view_state,
+#                              layers=layers))
+#     return vendors
+
 
 # def show_default_map(postings):
 #     singapore = [1.3521, 103.8198]
-#     # Create a map centered around Singapore
-#     m = folium.Map(location=singapore, zoom_start=12, tiles='CartoDB positron')
+#     # remove photo from df for scatterplot processing
 
-#     # If your dataframe has columns named 'latitude' and 'longitude', this will work directly
-#     # Create a MarkerCluster to add all your vendors
-#     marker_cluster = MarkerCluster().add_to(m)
+#     if 'photo' in postings.columns:
+#         vendors_no_photo = postings.drop(columns=['photo'])
+#     else:
+#         vendors_no_photo = postings
 
-#     # Loop through the data frame
-#     for idx, row in postings.iterrows():
-#         # Create an HTML string for the popup
-#         popup_html = f"""
-#         <div style='width:200px;'><strong></strong><br>
-#             {row['description']}<br>
-#             Price: {row['price']}<br>
-#             Address: {row['address']}<br>
-#         </div>
-#         """
-#         popup = folium.Popup(popup_html, max_width=265)
-#         folium.Marker(
-#             location=[row['latitude'], row['longitude']],
-#             popup=popup,
-#             icon=folium.Icon(icon='info-sign', color='red')
-#         ).add_to(marker_cluster)
+#     view_state = pdk.ViewState(
+#         latitude=singapore[0], longitude=singapore[1], zoom=10.5)
 
-#     # Display the map
-#     st_folium(m, width=725)
+#     layer = []
+#     # Vendor locations layer
+#     if not vendors_no_photo.empty:
+#         vendor_layer = pdk.Layer(
+#             'ScatterplotLayer',
+#             data=vendors_no_photo,
+#             get_position='[longitude, latitude]',
+#             get_color='[200, 30, 0, 160]',
+#             get_radius=200,
+#         )
+#         layer.append(vendor_layer)
 
 
+#     st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/streets-v12',
+#                              initial_view_state=view_state,
+#                              layers=layer))
+
+def show_default_map(postings):
+    singapore = [1.3521, 103.8198]
+    f = folium.Figure(width=725)
+    m = folium.Map(location=singapore, zoom_start=12,
+                   tiles='openstreetmap').add_to(f)
+    marker_cluster = MarkerCluster().add_to(m)
+
+    for idx, row in postings.iterrows():
+        popup_html = f"""
+        <div style='width:200px;'><strong>{row['food_name']}</strong><br>
+            Address: {row['address']}<br>
+        </div>
+        """
+        popup = folium.Popup(popup_html, max_width=265)
+        folium.Marker(
+            location=[row['latitude'], row['longitude']],
+            popup=popup,
+            icon=folium.Icon(icon='info-sign', color='green')
+        ).add_to(marker_cluster)
+
+    st_folium(m, width=725)
+
+
+def show_map_with_location(postings, user_location, distance_filter):
+    f = folium.Figure(width=725)
+    m = folium.Map(location=user_location, zoom_start=calculate_zoom_level(
+        distance_filter), tiles='openstreetmap').add_to(f)
+    marker_cluster = MarkerCluster().add_to(m)
+
+    folium.Marker(
+        user_location,
+        icon=folium.Icon(icon='home', color='blue'),
+    ).add_to(m)
+
+    folium.CircleMarker(
+        location=user_location,
+        radius=distance_filter,
+        color="cornflowerblue",
+        stroke=False,
+        fill=True,
+        fill_opacity=0.2,
+        opacity=1,
+        popup="{} pixels".format(distance_filter),
+    ).add_to(m)
+
+    for idx, row in postings.iterrows():
+        popup_html = f"""
+        <div style='width:200px;'><strong>{row['food_name']}</strong><br>
+            Credits: {int(row['price'])}<br>
+            Address: {row['address']}<br>
+        </div>
+        """
+        popup = folium.Popup(popup_html, max_width=265)
+        folium.Marker(
+            location=[row['latitude'], row['longitude']],
+            popup=popup,
+            icon=folium.Icon(icon='info-sign', color='green')
+        ).add_to(marker_cluster)
+
+    st_folium(m, width=725)
+    return postings
 
 
 def retrieve_inventory(user_location=None, max_distance=None):
@@ -287,7 +316,7 @@ def retrieve_inventory(user_location=None, max_distance=None):
 
     postings = []
     for (inv_id, food_name, food_type, description, is_halal, is_veg, expiry,
-        date_of_entry, qty_left_after_booking, qty_left_after_scanning, for_ngo, vendor_id, photo, address, price) in allInventory:
+         date_of_entry, qty_left_after_booking, qty_left_after_scanning, for_ngo, vendor_id, photo, address, price) in allInventory:
 
         lat, lon = convert_address_to_latlong(address)
         if lat is not None and lon is not None:
@@ -316,5 +345,4 @@ def retrieve_inventory(user_location=None, max_distance=None):
 
             })
 
-    # print(postings)
     return pd.DataFrame(postings)
